@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <include file="scripts/01_create_roles.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/02_create_departments.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/03_create_users.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/04_create_terminals.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/05_create_registrations.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/11_insert_roles.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/12_insert_users.sql" relativeToChangelogFile="true"/>
+        </databaseChangeLog>
+
+
+

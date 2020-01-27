@@ -1,0 +1,84 @@
+. {
+    margin: 0;
+    padding: 0;
+}
+
+button {}
+
+.closeButton-error {
+    cursor: pointer;
+    float: right;
+    font-size: 20px;
+    color: white;
+}
+.modal-overlay {
+    background: rgba(0,0,0,0.2);
+    position: fixed;
+    display: none;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    perspective: 500px;
+    /*запрет выделения текста*/
+    -moz-user-select: none; /* Mozilla Firefox */
+    -ms-user-select: none; /* Internet Explorer (не поддерживается) */
+    -webkit-user-select: none; /* Google Chrome, Opera Next, Safari */
+}
+
+.modal-overlay .modal-wrapper {
+    position: absolute;
+    width: 600px;
+
+    top: 15%;
+    box-shadow: 0px 0px 13px 0px rgba(0,0,0,0.4);
+
+
+}
+
+.modal-header {
+    background: #7F0002;
+    padding: 5px 15px;
+    color:#CBCBCB;
+    min-width: 400px;
+
+}
+.modal-body {
+    display: table;
+    height: 75%;
+    background: rgb(235, 235, 235);
+
+}
+.modal-footer {
+    background: rgb(235, 235, 235);
+    bottom: 0px;
+    min-width: 400px;
+    height: 80px;
+
+
+
+}
+
+.info-field {
+
+    display: table-cell;
+    width: 570px;
+
+    vertical-align: middle;
+    margin: 0;
+    padding: 15px;
+    background:#F1D9D9;
+    font-family:Cambria, "Hoefler Text", "Liberation Serif", Times, "Times New Roman", "serif";
+    font-weight: bold;
+    text-overflow:ellipsis;
+    font-size: 5vh; /*масштабируемый размер шрифта*/
+    line-height: 5vh;
+}
+
+.ok-error {
+    width: 100px;
+    margin-left: 50px;
+    margin-top: 30px;
+}
+

@@ -1,0 +1,140 @@
+.table_header {
+    background: #7b8fa5;
+    padding: 1px; /* Поля вокруг текста */
+    text-align: center;
+    font-size:15px;
+    height: 30px;
+}
+
+.main_block {
+    width: 100%;
+    margin:0;
+
+}
+
+.main_table {
+    min-width: 650px;
+    width: 50%;
+    margin: auto;
+    table-layout:auto; /*Ширина столбцов по содержимому*/
+    background: #7b8fa5;
+    border-radius: 12px;
+    border-spacing: 0;
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+}
+
+.forms {
+    margin: 0;
+}
+
+.row {
+    background: #c8d2dd; /* Цвет фона ячеек */
+    padding: 5px; /* Поля вокруг текста */
+
+
+}
+
+.cell, .department_name_cell {
+    border: 1px solid #ebebeb;
+    text-align: left;
+    font-size:14px;
+    padding-left: 5px;
+}
+
+.department_name_cell {
+    padding-left: 15px;
+}
+
+
+th:first-child {
+    border-top-left-radius: 12px;
+}
+
+th:last-child {
+    border-top-right-radius: 12px;
+    border-right: none;
+}
+
+.table_footer {
+    position: relative;
+    padding-top: 18px;
+    padding-left: 12px;
+    background: #98adc3;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+#headerUpdateColumn {
+    width: 130px;
+}
+
+#bodyUpdateColumn {
+    width: 125px;
+}
+
+#headerDeleteColumn {
+    width: 100px;
+}
+
+#bodyDeleteColumn {
+    width: 95px;
+}
+
+.row:hover {
+    background-color: #abb5c0;
+}
+
+#create_container, #update_container {
+    position: absolute;
+    top: 15px;
+    left: 110px;
+    width: 500px;
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+}
+
+#createInput, #renameInput {
+    display: inline-block;
+    width: 200px;
+    height: 18px;
+}
+
+#okCreateButton, #okRenameButton {
+    display: inline-block;
+    width: 60px;
+}
+
+#cancelCreateButton, #cancelRenameButton {
+    display: inline-block;
+}
+
+#info_container {
+    margin: auto;
+    margin-top: 6px;
+    width: 500px;
+    height: 35px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #c51a1a;
+}
+
+tbody {
+    display:block;
+    min-height: 100px;
+    max-height: 400px;
+    overflow:auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;/* even columns width , fix width of table too*/
+
+}
+thead {
+    width: calc( 100% - 1em )/* scrollbar is average 1em/16px width, remove it from thead width */
+}

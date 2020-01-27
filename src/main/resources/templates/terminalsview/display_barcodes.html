@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/terminals/display_barcodes.css}"/>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/terminals/display_barcodes.js}"></script>
+    <title>Распечатать ШК</title>
+</head>
+<body>
+
+<div class="back_button">
+    <form action="./terminals">
+        <button id="back_button">Назад</button>
+    </form>
+</div>
+<!--<c:forEach items="${sessionScope.listOfTerminals}" var="eachTerminal" varStatus="theCount">-->
+
+
+    <div class="page_frame">
+        <table id="barcode_table" class="barcode_table">
+<!--            <c:forEach var="i" begin="1" end="5" step="1">-->
+<!--                <tr class="barcode_row">-->
+<!--                    <td class="barcode_cell">-->
+<!--                        <img src="${pageContext.servletContext.contextPath}/generatebarcode?barcodeText=${eachTerminal.inventoryId}&displayText=${eachTerminal.regId}"-->
+<!--                             width="148" height="51">-->
+<!--                        ${eachTerminal.regId}-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </c:forEach>-->
+        </table>
+    </div>
+
+
+<!--</c:forEach>-->
+
+</body>
+</html>

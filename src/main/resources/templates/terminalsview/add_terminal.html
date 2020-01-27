@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/main/main_menu.css}"/>
+    <link rel="stylesheet" th:href="@{/css/terminals/terminal_add.css}"/>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/terminals/add_terminal.js}"></script>
+    <title>Добавление терминала</title>
+</head>
+<body>
+
+<div class="terminal_info">
+    <div class="header">Добавление нового терминала:
+        <hr>
+    </div>
+
+        <table class="table">
+
+            <tr>
+                <td class="cell">Учетный номер:</td>
+                <td><input id="regId" class="input" type='text' name='regId' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Модель:</td>
+                <td><input id="model" class="input" type='text' name='model' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Серийный номер:</td>
+                <td><input id="serialId" class="input" type='text' name='serialId' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Инв. номер:</td>
+                <td><input id="inventoryId" class="input" type='text' name='inventoryId' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Комментарий:</td>
+                <td><textarea id="comment" name="comment" class="commentField" cols="32" rows="7"
+                              AUTOCOMPLETE="off" style="resize: none"></textarea></td>
+            </tr>
+            <tr>
+                <td class="cell">Департамент:</td>
+                <td><select id="departmentsSelector" class="input" name="department" >
+                </select></td>
+            </tr>
+
+            <tr>
+                <td class="cell">Активен:</td>
+                <td>
+                    <input id="isActive_input" type='checkbox' name='isActive' value="true" checked/>
+                </td>
+            </tr>
+        </table>
+
+        <hr>
+        <div class="left_button"><input type='button' onclick="return validate();" value='Создать'></div>
+
+
+    <div class="right_button">
+        <form action="./terminals">
+            <button>Назад</button>
+        </form>
+    </div>
+
+    <div class="sys_info" id="sys_info">
+    </div>
+
+</div>
+
+</body>
+</html>

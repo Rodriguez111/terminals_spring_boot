@@ -1,0 +1,55 @@
+@page { /*Размер страницы для печати/
+   */
+    size:151px 388px;
+    margin: 0px 0px 0px 0px;
+}
+
+
+@media print {
+    .back_button {
+        display: none;
+    }
+}
+
+
+
+.page_frame {
+
+    position: relative;
+    width: 151px;
+    height: 386px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.barcode_table {
+    position: relative;
+    border-collapse: collapse; /*Убираем двойные линии между ячейками*/
+    max-width:  100%;
+    page-break-after: always; /*Разрыв страниц для печати*/
+}
+
+.barcode_row {
+    height: 75px;
+}
+
+.barcode_cell {
+    height: 77px;
+    /*border: #AFAFAF thin solid; !* Параметры рамки *!*/
+    font-family: Arial;
+    font-size: 24px;
+    line-height: 20px;
+    font-weight: bold;
+    vertical-align: top;
+    text-align: center;
+    /*border: black thin solid;*/
+}
+
+.back_button {
+    position: fixed;
+    left: 100px;
+    top: 10px;
+}
+

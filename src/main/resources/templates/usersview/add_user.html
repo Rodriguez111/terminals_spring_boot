@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/main/main_menu.css}"/>
+    <link rel="stylesheet" th:href="@{/css/users/user_add.css}"/>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/users/add_user.js}"></script>
+    <title>Создание пользователя</title>
+</head>
+<body>
+
+<div class="user_info">
+    <div class="header">Создание нового пользователя:
+        <hr>
+    </div>
+
+        <table class="table">
+            <tr>
+                <td class="cell">Логин:</td>
+                <td><input id="login" class="input" type='text' name='login' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Пароль:</td>
+                <td><input id="password" class="input" type='password' name='password' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Подтверждение пароля:</td>
+                <td><input id="rePassword" class="input" type='password' name='rePassword' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Имя:</td>
+                <td><input id="name" class="input" type='text' name='name' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Фамилия:</td>
+                <td><input id="surname" class="input" type='text' name='surname' required  AUTOCOMPLETE="off"/></td>
+            </tr>
+            <tr>
+                <td class="cell">Роль:</td>
+                <td><select id="rolesSelector" class="input" required name="role" >
+                </select></td>
+            </tr>
+
+            <tr>
+                <td class="cell">Департамент:</td>
+                <td><select id="departmentsSelector" class="input" name="department" >
+                </select></td>
+            </tr>
+
+
+            <tr>
+                <td class="cell">Активен:</td>
+                <td>
+                    <input id="isActive_input" type='checkbox' name='isActive' value="true" checked/>
+                </td>
+            </tr>
+        </table>
+
+
+        <hr>
+        <div class="left_button"><input type='button' onclick="return validate();" value='Создать'></div>
+
+
+    <div class="right_button">
+        <form action="./users">
+            <button>Назад</button>
+        </form>
+    </div>
+
+    <div class="sys_info" id="sys_info">
+    </div>
+
+
+</div>
+
+
+
+</body>
+</html>

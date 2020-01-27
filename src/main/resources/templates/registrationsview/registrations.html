@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/registrations/regs.css}"/>
+    <link rel="stylesheet" th:href="@{/css/registrations/regs_error_popup.css}"/>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/registrations/registrations.js}"></script>
+    <title>Учет приема-выдачи</title>
+</head>
+<body onload="onWindowLoad()">
+<div class="main_block">
+
+    <table class="main_table">
+        <tbody>
+        <tr class="top_half">
+            <td class="left_up_quarter">
+                <div class="topWindowName"> Информация о терминалах</div>
+
+                <div class="terminalInputBlock">
+                    <div class="terminal"> Терминал</div>
+
+                    <input id="terminalInput" class="terminalInput" type="password" name="terminalInvId" size="20"
+                           autocomplete="off">
+
+                </div>
+
+                <div class="terminalInfoBlock">
+                    <div class="terminalNo"> № терминала</div>
+                    <div id="terminalNoInfo" class="terminalNoInfo"></div>
+                </div>
+
+                <div class="operationTypeBlock">
+                    <div class="operationType"> Тип операции</div>
+                    <div id="operationTypeInfo" class="operationTypeInfo"></div>
+
+                </div>
+
+                <div class="terminalsTotalBlock">
+                    <div class="terminalsTotal">Всего</div>
+                    <div id="terminalsTotalInfo" class="terminalsTotalInfo"></div>
+                </div>
+
+                <div class="terminalsInactiveBlock">
+                    <div class="terminalsInactive">Неактивных</div>
+                    <div id="terminalsInactiveInfo" class="terminalsInactiveInfo"></div>
+                </div>
+
+                <div class="terminalsGivenBlock">
+                    <div class="terminalsGiven">Выдано</div>
+                    <div id="terminalsGivenInfo" class="terminalsGivenInfo"></div>
+                </div>
+
+                <div class="terminalsRemainBlock">
+                    <div class="terminalsRemain">Осталось активных</div>
+                    <div id="terminalsRemainInfo" class="terminalsRemainInfo"></div>
+                </div>
+            </td>
+            <td class="right_up_quarter">
+                <div id="terminalImageBlock" class="terminalImageBlock">
+
+                </div>
+
+            </td>
+        </tr>
+        <tr class="bottom_half">
+            <td class="left_bottom_quarter">
+                <div class="bottomWindowName"> Информация о пользователях</div>
+                <div class="userInputBlock">
+                    <div class="user"> Пользователь</div>
+                    <input id="userInput" class="userInput" type="password" name="userLogin" size="20"
+                           AUTOCOMPLETE="off" >
+
+                </div>
+
+                <div class="userNameBlock">
+                    <div class="userName"> Фамилия и имя пользователя</div>
+                    <div id="userNameInfo" class="userNameInfo"></div>
+                </div>
+
+                <div class="adminNameBlock">
+                    <div class="adminName"> Фамилия и имя администратора</div>
+                    <div id="adminNameInfo" class="adminNameInfo">
+                        <span sec:authentication="principal.surName"></span>
+                        <span sec:authentication="principal.name"></span>
+                    </div>
+                </div>
+
+
+            </td>
+            <td class="right_bottom_quarter">
+                <div id="userImageBlock" class="userImageBlock">
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<input type="hidden" id="adminLogin" th:value="${#authentication.principal.username}" />
+
+<div class="modal-overlay">
+    <div class="modal-wrapper">
+        <div class="modal-header">
+            Ошибка!
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="info-field" id="info-field">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="ok-error" class="ok-error">Ok</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

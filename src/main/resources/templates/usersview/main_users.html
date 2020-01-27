@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/main/main_menu.css}"/>
+    <link rel="stylesheet" th:href="@{/css/users/users_main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/users/users_delete_popup.css}"/>
+    <link rel="stylesheet" th:href="@{/css/users/users_error_popup.css}"/>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/users/main_users.js}"></script>
+    <title>Пользователи</title>
+</head>
+<body>
+<div class="header_strip">
+    <div class="menu_container">
+        <div id="logo">Version: 2.0.0<br>Developed by:<br>Ruben Khodzhaev<br>Copyright 2020 ©<br>All Rights Reserved.
+        </div>
+        <ul id="main_menu">
+            <li class="li" id="left_button"><a class="common_button" href="./main">Главная</a></li>
+            <li class="li"><a class="active_button" href="./users">Пользователи</a></li>
+            <li class="li"><a class="common_button" href="./terminals">Терминалы</a></li>
+            <li class="li"><a class="common_button" href="./departs">Департаменты</a></li>
+            <li class="li"><a class="common_button" href="./regs">Учет</a></li>
+            <li id="right_button"><a class="adminInformation" href=""><span sec:authentication="principal.name"></span>
+                <span sec:authentication="principal.surName"></span> <br> роль: <span
+                        sec:authentication="principal.authorities[0]"></span></a>
+                <ul id="sub_menu">
+                    <li id="sub_li"><a class="exit" href="./logout">Выход</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="first_separator">
+    <hr>
+</div>
+
+<input th:type="hidden" id="roleOfLoggedInUser" name="role" th:value="${#authentication.principal.authorities[0]}"/>
+
+
+<div id="info_container">
+    <div class="check_box_container">
+        <label for="show_only_active">Только активные</label>    <input id="show_only_active" type="checkbox">
+    </div>
+    <div id="countOfAllUsers_container">
+    </div>
+    <div id="countOfActiveUsers_container">
+    </div>
+</div>
+
+<div class="main_block">
+    <table id="main_table" class="main_table">
+    </table>
+</div>
+
+
+<div class="modal">
+    <div class="modal-wrapper">
+        <div class="modal-header">
+            <span class="closeButton">&times;</span>
+            Удаление
+        </div>
+        <div class="modal-body" id="modal-body">
+
+        </div>
+        <div class="modal-footer">
+            <button id="ok" class="ok">Да</button>
+            <button id="cancel" class="cancel">Отменить</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-error">
+    <div class="modal-wrapper-error">
+        <div class="modal-header-error">
+            <span class="closeButton-error">&times;</span>
+            Ошибка
+        </div>
+        <div class="modal-body" id="modal-body-error">
+
+        </div>
+        <div class="modal-footer-error">
+            <button id="ok-error" class="ok-error">Ok</button>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+.terminal_info {
+    position: relative;
+    width: 400px;
+    height: 480px;
+    top: 5%;
+    left: 50%;
+    margin: 0 0 0 -200px;
+    background: #C8D2DD;
+    border-radius: 12px;
+    padding: 5px;
+    border: solid 1px #e5e5e5;
+    float: left;
+}
+
+.cell {
+    border:solid thin #FFFFFF;
+    padding:5px;
+    text-align:left;
+    margin-bottom:10px;
+    padding-bottom:10px;
+}
+
+.table {
+    border-collapse: collapse;
+    width:100%;
+    table-layout:auto;
+    font-family: "Trebuchet MS", "Lucida Sans";
+    font-weight:bold;
+    font-stretch:ultra-condensed;
+}
+
+.input {
+    width:100%;
+    height:25px;
+}
+
+.header {
+    font-family: "Trebuchet MS", "Lucida Sans";
+    font-size:19px;
+    font-weight:bold;
+    font-stretch:ultra-condensed;
+}
+
+.left_button {
+    float: left;
+    width: 330px;
+}
+.right_button {
+    float: right;
+    width: 60px;
+}
+
+.form {
+    margin: 0; /* Убираем отступы вокруг формы */
+}
+
+.commentField {
+    resize: none;
+}
+
+.sys_info {
+    margin-top: 40px;
+    width: 100%;
+    height: 30px;
+    color:#FF3366;
+    font-family: "Trebuchet MS", "Lucida Sans";
+    font-weight:bold;
+    font-size: 14px;
+}

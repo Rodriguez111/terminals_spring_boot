@@ -1,0 +1,213 @@
+.table_header {
+    background: #7b8fa5;
+    padding: 1px; /* Поля вокруг текста */
+    text-align: center;
+    font-size:14px;
+    height: 30px;
+}
+
+.main_table {
+    width: 100%;
+    table-layout:auto; /*Ширина столбцов по содержимому*/
+    background: #7b8fa5;
+    border-radius: 12px;
+    border-spacing: 0;
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+}
+
+.forms {
+    margin: 0;
+}
+
+.delete_forms {
+    margin: 0;
+}
+
+.row {
+    background: #c8d2dd; /* Цвет фона ячеек */
+    padding: 5px; /* Поля вокруг текста */
+
+}
+
+.cell {
+    /*border: 1px solid #ebebeb;*/
+    text-align: left;
+    font-size:14px;
+    overflow: hidden;
+    padding-left: 5px;
+    overflow: hidden;
+}
+
+.main_block {
+    width: 100%;
+    margin:auto;
+}
+
+th:first-child {
+    border-top-left-radius: 12px;
+}
+
+th:last-child {
+    border-top-right-radius: 12px;
+    border-right: none;
+}
+
+#table_footer {
+    position: relative;
+    height: 50px;
+    padding-bottom: 25px;
+    background: #98adc3;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+#create_button {
+    position: absolute;
+    top: 15px;
+    left: 70px;
+}
+
+#generate_button {
+    position: absolute ;
+    top: 15px;
+    right: 70px;
+}
+
+.row:hover {
+    background-color: #abb5c0;
+}
+ #info_container {
+     position: relative;
+     margin: auto;
+     margin-top: -5px;
+     margin-bottom: 5px;
+     background: #b6b6b6;
+     height: 20px;
+     font-size: 15px;
+     font-weight: bold;
+     font-family: "Arial";
+ }
+
+ #countOfAllTerminals_container {
+     position: absolute;
+     top: 2px;
+     right: 180px;
+ }
+
+#countOfActiveTerminals_container {
+    position: absolute;
+    top: 2px;
+    right: 40px;
+}
+
+ .check_box_container {
+     position: absolute;
+     left: 40px;
+
+ }
+
+ #show_only_active {
+     margin-top: 3px;
+ }
+
+tbody {
+    display:block;
+    min-height: 100px;
+    max-height: 480px;
+    overflow:auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;/* even columns width , fix width of table too*/
+
+}
+thead {
+    width: calc( 100% - 1em );/* scrollbar is average 1em/16px width, remove it from thead width */
+
+}
+
+table tbody td {
+    border: 1px solid #ebebeb;
+}
+
+#headerRegIdColumn {
+    width: 90px;
+}
+
+#bodyRegIdColumn {
+    width: 85px;
+}
+
+#headerModelColumn {
+    width: 80px;
+}
+
+#bodyModelColumn {
+    width: 75px;
+}
+
+#headerCommentColumn {
+    max-width: 200px;
+}
+
+#bodyCommentColumn {
+    max-width: 195px;
+}
+
+#headerUserLoginColumn {
+    width: 100px;
+}
+
+#bodyUserLoginColumn {
+    width: 95px;
+}
+
+#headerActiveColumn {
+    width: 60px;
+}
+
+#bodyActiveColumn {
+    width: 55px;
+}
+
+#headerCreateColumn {
+    width: 130px;
+}
+
+#bodyCreateColumn {
+    width: 125px;
+}
+
+#headerUpdateColumn {
+    width: 130px;
+}
+
+#bodyUpdateColumn {
+    width: 125px;
+}
+
+#headerEditColumn {
+    width: 100px;
+}
+
+#bodyEditColumn {
+    width: 95px;
+}
+
+#headerDeleteColumn {
+    width: 80px;
+}
+
+#bodyDeleteColumn {
+    width: 75px;
+}
+
+.editBtn, .deleteBtn {
+    height: 16px;
+    font-size: 12px;
+    padding: 0 7px 0 7px;
+}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="./png/icon.png"/>
+    <link rel="stylesheet" th:href="@{/css/main/main_menu.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main/main_page.css}"/>
+    <script type="text/javascript" th:src="@{js/main_page.js}"></script>
+    <script type="text/javascript" th:src="@{js/jquery-3.4.1.min.js}"></script>
+
+
+    <title>Главная: данные учета</title>
+</head>
+<body>
+
+
+<div class="header_strip">
+    <div class="menu_container">
+        <div id="logo">Version: 2.0.0<br>Developed by:<br>Ruben Khodzhaev<br>Copyright 2020 ©<br>All Rights Reserved.
+        </div>
+        <ul id="main_menu">
+            <li class="li" id="left_button"><a class="active_button" href="./main">Главная</a></li>
+            <li class="li"><a class="common_button" href="./users">Пользователи</a></li>
+            <li class="li"><a class="common_button" href="./terminals">Терминалы</a></li>
+            <li class="li"><a class="common_button" href="./departs">Департаменты</a></li>
+            <li class="li"><a class="common_button" href="./regs">Учет</a></li>
+            <li id="right_button"><a class="adminInformation" href=""><span sec:authentication="principal.name"></span>
+                <span sec:authentication="principal.surName"></span> <br> роль: <span
+                        sec:authentication="principal.authorities[0]"></span></a>
+                <ul id="sub_menu">
+                    <li id="sub_li"><a class="exit" href="./logout">Выход</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="first_separator">
+    <hr>
+</div>
+
+
+<div class="filter">
+    <button id="filter_on_button">Включить фильтр</button>
+    <button id="filter_off_button">Выключить фильтр</button>
+    <button id="apply_filter_button">Применить фильтр</button>
+    <a href="./main">
+        <button id="reset_filter_button">Сбросить фильтр</button>
+    </a>
+
+</div>
+
+
+<div class="main_block">
+    <table class="main_table" id="myTable">
+
+
+            <tr class="table_header">
+                <th class="header_cell">
+                    <div class="table_titles">№ терминала</div>
+
+                    <div class="triangles_block" id="sortByRegId">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+
+                </th>
+                <th class="header_cell">
+                    <div class="table_titles">Логин</div>
+                    <div class="triangles_block" id="sortByLogin">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+                </th>
+                <th class="header_cell">
+                    <div class="table_titles">Фамилия и имя</div>
+                    <div class="triangles_block" id="sortByFullName">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+
+
+                <th class="header_cell">
+                    <div class="table_titles">Кто выдал</div>
+                    <div class="triangles_block" id="sortByWhoGave">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+                </th>
+                <th class="header_cell">
+                    <div class="table_titles">Кто принял</div>
+                    <div class="triangles_block" id="sortByWhoReceived">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+                </th>
+
+
+                <th class="header_cell">
+                    <div class="table_titles">Дата выдачи</div>
+                    <div class="triangles_block" id="sortByStartDate">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+                </th>
+                <th class="header_cell">
+                    <div class="table_titles">Дата приема</div>
+                    <div class="triangles_block" id="sortByEndDate">
+                        <div class="two_triangles" onClick="makeSortDown(this)">
+                            &#x25B2;<br>
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_down" onClick="makeSortUp(this)">
+                            &#x25BC;
+                        </div>
+                        <div class="triangle_up" onClick="makeSortDown(this)">
+                            &#x25B2;
+                        </div>
+                    </div>
+                </th>
+            </tr>
+
+
+
+
+
+
+        <tr class="table_filter">
+            <td class="filter_cell">
+                <input id="regIdFilter" class="filter_text_input" type="text" name="regIdFilter" AUTOCOMPLETE="off"/>
+            </td>
+            <td class="filter_cell"><input id="loginFilter" class="filter_text_input" type="text" name="loginFilter"
+                                           AUTOCOMPLETE="off">
+            </td>
+            <td class="filter_cell"><input id="fullNameFilter" class="filter_text_input" type="text" name="fullNameFilter"
+                                           AUTOCOMPLETE="off"/>
+            </td>
+            <td class="filter_cell"><input  id="whoGaveFilter" class="filter_text_input" type="text" name="whoGaveFilter"
+                                           AUTOCOMPLETE="off"/>
+            </td>
+            <td class="filter_cell"><input id="whoReceivedFilter" class="filter_text_input" type="text" name="whoReceivedFilter"
+                                           AUTOCOMPLETE="off"/>
+            </td>
+            <td class="filter_cell">
+                <div class="filter_date_input_block">
+                    <input id="startDateFilterFrom" class="filter_date_input" type="date" name="startDateFilterFrom" AUTOCOMPLETE="off"/>
+                    <input id="startDateFilterTo" class="filter_date_input" type="date" name="startDateFilterTo" AUTOCOMPLETE="off"/>
+                </div>
+
+
+            </td>
+            <td class="filter_cell">
+                <div class="filter_date_input_block">
+                    <input id="endDateFilterFrom" class="filter_date_input" type="date" name="endDateFilterFrom" AUTOCOMPLETE="off"/><br>
+                    <input id="endDateFilterTo" class="filter_date_input" type="date" name="endDateFilterTo" AUTOCOMPLETE="off"/>
+                </div>
+            </td>
+
+        </tr>
+
+        <tbody id="table_body">
+
+        </tbody>
+
+        <tr>
+            <td class="table_footer" colspan='7'>
+
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+
+</body>
+</html>

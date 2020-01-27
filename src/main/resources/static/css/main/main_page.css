@@ -1,0 +1,175 @@
+.table_header {
+    background: rgba(51, 89, 130, 0.53); /* Цвет фона ячеек */
+    padding: 1px; /* Поля вокруг текста */
+    text-align: center;
+    font-size:15px;
+}
+
+.header_cell {
+    position: relative;
+    height: 30px;
+    border-right: thin solid #FFFFFF;
+    border-bottom: double medium #FFFFFF;
+}
+
+.table_titles {
+    position: relative;
+    margin: auto;
+}
+
+.table_filter {
+    display: none;
+    background:#ccc;
+    text-align: center;
+
+}
+
+
+.filter {
+    position: relative;
+    margin-bottom:10px;
+    height: 20px;
+}
+
+.filter_cell {
+    position: relative;
+    margin: auto;
+    border: 1px solid #ebebeb;
+    padding: 5px;
+
+}
+
+#filter_on_button {
+    position: absolute;
+    margin-left: 20px;
+
+}
+
+#filter_off_button {
+    display: none;
+    position: absolute;
+    margin-left: 20px;
+
+}
+
+#apply_filter_button {
+    position: absolute;
+    margin-left: 250px;
+    display: none;
+
+}
+
+#reset_filter_button {
+    position: absolute;
+    margin-left: 250px;
+    display: block;
+}
+
+
+.triangles_block {
+    position: absolute;
+    right: 15px;
+    bottom: 5px;
+    -webkit-user-select: none; /*запрет выделения текста*/
+    color:#000970;
+    cursor: pointer;
+
+}
+
+
+.two_triangles {
+    display: block;
+    font-size: 11px;
+    line-height: 10px;
+
+}
+
+.triangle_down {
+    display: none;
+    font-size: 10px;
+    line-height: 10px;
+    color: crimson;
+}
+
+.triangle_up {
+    display: none;
+    margin-bottom: 5px;
+    font-size: 10px;
+    line-height: 10px;
+    color:darkgreen;
+}
+
+
+.filter_text_input {
+    width: 80%;
+    font-size: 12px;
+}
+
+.filter_date_input_block {
+    width: 70%;
+}
+
+.filter_date_input {
+    font-size: 11px;
+    width: 120px;
+
+}
+
+
+.main_table {
+    width: 100%;
+    table-layout:fixed; /*Ширина столбцов по содержимому*/
+    background: #ccc;
+    border-radius: 12px;
+    border-spacing: 0;
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+}
+
+.forms {
+    margin: 0;
+}
+
+.delete_forms {
+    margin: 0;
+}
+
+.row {
+    background: #c8d2dd; /* Цвет фона ячеек */
+    padding: 5px; /* Поля вокруг текста */
+
+
+}
+
+.cell {
+    border: 1px solid #ebebeb;
+    text-align: left;
+    font-size:14px;
+    padding-left: 5px;
+}
+
+.main_block {
+    width: 100%;
+    margin:auto;
+}
+
+th:first-child {
+    border-top-left-radius: 12px;
+}
+
+th:last-child {
+    border-top-right-radius: 12px;
+    border-right: none;
+}
+
+.table_footer {
+    padding-top: 18px;
+    padding-left: 12px;
+    background: #98adc3;
+    height: 40px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.row:hover {
+    background-color: #abb5c0;
+}
