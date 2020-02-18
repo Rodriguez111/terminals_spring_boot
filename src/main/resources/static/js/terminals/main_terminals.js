@@ -70,32 +70,36 @@ function checkCheckbox() {
 
 
 function showAllTerminals() {
-    sendAjaxRequest("getAllTerminals", getTerminals);
+    let url = "./terminals_controller/all";
+    sendAjaxRequest(url, "get", "", getTerminals);
 }
 
 function showActiveTerminals() {
-    sendAjaxRequest("getActiveTerminals", getTerminals);
+    let url = "./terminals_controller/active";
+    sendAjaxRequest(url, "get", "", getTerminals);
 }
 
 function getCountOfAllTerminals() {
-    sendAjaxRequest("getCountOfAllTerminals", showCountOfAllUsers);
+    let url = "./terminals_controller/countall";
+    sendAjaxRequest(url, "get", "", showCountOfAllTerminals);
 }
 
 function getCountOfActiveTerminals() {
-    sendAjaxRequest("getCountOfActiveTerminals", showCountOfActiveUsers);
+    let url = "./terminals_controller/countactive";
+    sendAjaxRequest(url, "get", "", showCountOfActiveTerminals);
 }
 
-function showCountOfAllUsers(data) {
-    document.getElementById("countOfAllTerminals_container").innerHTML = "Всего: " + data.countOfAllTerminals;
+function showCountOfAllTerminals(countOfAllTerminals) {
+    document.getElementById("countOfAllTerminals_container").innerHTML = "Всего: " + countOfAllTerminals;
 }
 
-function showCountOfActiveUsers(data) {
-    document.getElementById("countOfActiveTerminals_container").innerHTML = "Активных: " + data.countOfActiveTerminals;
+function showCountOfActiveTerminals(countOfActiveTerminals) {
+    document.getElementById("countOfActiveTerminals_container").innerHTML = "Активных: " + countOfActiveTerminals;
 }
 
 
 
-function getTerminals(data) {
+function getTerminals(listOfTerminals) {
     getCountOfAllTerminals();
     getCountOfActiveTerminals();
 
@@ -116,7 +120,6 @@ function getTerminals(data) {
             "<th id=\"headerDeleteColumn\">Удалить</th>"
     }
     table += " </tr></thead>";
-    var listOfTerminals = data.listOfTerminals;
     for(var i = 0; i < listOfTerminals.length; i++) {
         var active = listOfTerminals[i].terminalIsActive ? "Да" : "Нет";
         var department = listOfTerminals[i].department != null ? listOfTerminals[i].department.department : '';
@@ -172,14 +175,19 @@ function getTerminals(data) {
 }
 
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method:'post',
-        data:dataToSend,
-        contentType:'text/json; charset=utf-8',
-        dataType:'json',
-        success:function (data) {
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method: method,
+        data: dataToSend,
+        contentType: "text/json",
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
             callback(data);
+        },
+        error: function (e) {
+            console.log("error " + e.status);
         }
     })
 }
@@ -202,10 +210,9 @@ function onCancelModalClick() {
 }
 
 function deleteTerminal(terminalId) {
-    var dataToSend = {};
-    dataToSend["deleteTerminal"] = terminalId;
-    dataToSend = JSON.stringify(dataToSend);
-    sendAjaxRequest(dataToSend, whatToDoAfterDeleteTerminal);
+    let url = "./terminals_controller/" + terminalId;
+    sendAjaxRequest(url, "delete", "", whatToDoAfterDeleteTerminal);
+
 }
 
 function whatToDoAfterDeleteTerminal(data) {

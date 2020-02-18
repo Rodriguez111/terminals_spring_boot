@@ -5,22 +5,23 @@ import terminals.models.Terminal;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 public interface TerminalsService {
 
-    JSONObject findAllTerminals();
+    List<Terminal> findAllTerminals();
 
-    JSONObject findActiveTerminals();
+    List<Terminal> findActiveTerminals();
 
-    JSONObject getCountOfAllTerminals();
+    long getCountOfAllTerminals();
 
-    JSONObject getCountOfActiveTerminals();
+    int getCountOfActiveTerminals();
 
-    JSONObject findTerminalById(int id);
+    Terminal findTerminalById(String id);
 
-    JSONObject addTerminal(JSONObject jsonObject);
+    Map<String, String> addTerminal(Map<String, String> terminalParams);
 
-    JSONObject updateTerminal(JSONObject jsonObject);
+    Map<String, String> updateTerminal(String id, Map<String, String> terminalParams);
 
-    JSONObject deleteTerminal(int id);
+    Map<String, String> deleteTerminal(String id);
 }

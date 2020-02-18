@@ -48,14 +48,13 @@ function validate() {
         var isActive = isActiveInput.checked;
 
         var dataToSend = {};
-        dataToSend["addUser"] = {};
-        dataToSend["addUser"]["login"] = login;
-        dataToSend["addUser"]["password"] = password;
-        dataToSend["addUser"]["name"] = name;
-        dataToSend["addUser"]["surname"] = surname;
-        dataToSend["addUser"]["role"] = role;
-        dataToSend["addUser"]["department"] = department;
-        dataToSend["addUser"]["isActive"] = isActive;
+        dataToSend["login"] = login;
+        dataToSend["password"] = password;
+        dataToSend["name"] = name;
+        dataToSend["surname"] = surname;
+        dataToSend["role"] = role;
+        dataToSend["department"] = department;
+        dataToSend["isActive"] = isActive;
         dataToSend = JSON.stringify(dataToSend);
         sendAddUserInfo(dataToSend);
     }
@@ -63,7 +62,7 @@ function validate() {
 }
 
 function sendAddUserInfo(dataToSend) {
-    sendAjaxRequest(dataToSend, addUser);
+    sendAjaxRequest("./users_controller", "post", dataToSend, addUser);
 }
 
 function addUser(data) {
@@ -83,11 +82,11 @@ function validateLength(string, maxLength) {
 }
 
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method:'post',
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method:method,
         data:dataToSend,
-        contentType:'text/json; charset=utf-8',
+        contentType:'application/json; charset=utf-8',
         dataType:'json',
         success:function (data) {
             callback(data);
@@ -95,8 +94,7 @@ function sendAjaxRequest(dataToSend, callback) {
     })
 }
 
-function displayDepartmentsSelector(data) {
-    var listOfDepartments = data.listOfDeparts;
+function displayDepartmentsSelector(listOfDepartments) {
     var selector = document.getElementById("departmentsSelector");
     var options = document.createElement("option");
     options.selected = true;
@@ -112,11 +110,10 @@ function displayDepartmentsSelector(data) {
 }
 
 function getAndDisplayDepartments() {
-    sendAjaxRequest("getAllDepartments", displayDepartmentsSelector);
+    sendAjaxRequest("./departments_controller", "get", "",  displayDepartmentsSelector);
 }
 
-function displayRolesSelector(data) {
-    var listOfRoles = data.listOfRoles;
+function displayRolesSelector(listOfRoles) {
     var selector = document.getElementById("rolesSelector");
     for (var i = 0; i < listOfRoles.length; i++) {
         options = document.createElement("option");
@@ -131,7 +128,7 @@ function displayRolesSelector(data) {
 
 
 function getAndDisplayRoles() {
-    sendAjaxRequest("getListOfRoles", displayRolesSelector);
+    sendAjaxRequest("./roles_controller", "get", "",  displayRolesSelector);
 }
 getAndDisplayDepartments();
 getAndDisplayRoles();

@@ -50,45 +50,44 @@ window.onload= function (){
         var endDateFilterTo = document.getElementById('endDateFilterTo');
 
         var dataToSend = {};
-        dataToSend["filterSelect"] = {};
         if (regIdFilter.value !== "") {
-            dataToSend["filterSelect"]["regIdFilter"] = regIdFilter.value;
+            dataToSend["regIdFilter"] = regIdFilter.value;
         }
         if(loginFilter.value !== "") {
-            dataToSend["filterSelect"]["loginFilter"] = loginFilter.value;
+            dataToSend["loginFilter"] = loginFilter.value;
         }
         if(fullNameFilter.value !== "") {
-            dataToSend["filterSelect"]["fullNameFilter"] = fullNameFilter.value;
+            dataToSend["fullNameFilter"] = fullNameFilter.value;
         }
         if(whoGaveFilter.value !== "") {
-            dataToSend["filterSelect"]["whoGaveFilter"] = whoGaveFilter.value;
+            dataToSend["whoGaveFilter"] = whoGaveFilter.value;
         }
         if(whoReceivedFilter.value !== "") {
-            dataToSend["filterSelect"]["whoReceivedFilter"] = whoReceivedFilter.value;
+            dataToSend["whoReceivedFilter"] = whoReceivedFilter.value;
         }
         if(startDateFilterFrom.value !== "") {
-            dataToSend["filterSelect"]["startDateFilterFrom"] = startDateFilterFrom.value;
+            dataToSend["startDateFilterFrom"] = startDateFilterFrom.value;
         }
         if(startDateFilterTo.value !== "") {
-            dataToSend["filterSelect"]["startDateFilterTo"] = startDateFilterTo.value;
+            dataToSend["startDateFilterTo"] = startDateFilterTo.value;
         }
         if(endDateFilterFrom.value !== "") {
-            dataToSend["filterSelect"]["endDateFilterFrom"] = endDateFilterFrom.value;
+            dataToSend["endDateFilterFrom"] = endDateFilterFrom.value;
         }
         if(endDateFilterTo.value !== "") {
-            dataToSend["filterSelect"]["endDateFilterTo"] = endDateFilterTo.value;
+            dataToSend["endDateFilterTo"] = endDateFilterTo.value;
         }
         return JSON.stringify(dataToSend);
     }
 
 
     function getAllEntries() {
-        sendAjaxRequest("./mainpage", "getAllRegs", showEntries)
+        sendAjaxRequest("./mainpage_controller/all", "get",  "", showEntries)
     }
 
     function getEntriesByFilter() {
         var jsonToServer = composeJsonForQuery();
-        sendAjaxRequest("./mainpage", jsonToServer, showEntries)
+        sendAjaxRequest("./mainpage_controller/by_filter", "post", jsonToServer, showEntries)
     }
 
 
@@ -103,11 +102,11 @@ var twoTriangles = document.getElementsByClassName("two_triangles");
 var triangleDown = document.getElementsByClassName("triangle_down");
 var triangleUp = document.getElementsByClassName("triangle_up");
 
-function sendAjaxRequest(url, dataToSend, callback) {
+function sendAjaxRequest(url, method, dataToSend, callback) {
     $.ajax(url, {
-        method:'post',
+        method:method,
         data:dataToSend,
-        contentType:'text/json; charset=utf-8',
+        contentType:'application/json; charset=utf-8',
         dataType:'json',
         success:function (data) {
             callback(data);
@@ -146,7 +145,7 @@ function makeSortDown(element) {
     triangle_up.style.display = 'none';
     var sortWhat = triangles_block.id;
     var dataToSend = createJsonForSort(sortWhat, "down");
-    sendAjaxRequest("./mainpage", dataToSend, showEntries)
+    sendAjaxRequest("./mainpage_controller/sort", "post", dataToSend, showEntries)
 }
 
 function makeSortUp(element) {
@@ -161,7 +160,7 @@ function makeSortUp(element) {
     triangle_down.style.display = 'none';
     var sortWhat = triangles_block.id;
     var dataToSend = createJsonForSort(sortWhat, "up");
-    sendAjaxRequest("./mainpage", dataToSend, showEntries)
+    sendAjaxRequest("./mainpage_controller/sort", "post", dataToSend, showEntries)
 }
 
 

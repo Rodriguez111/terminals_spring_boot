@@ -1,14 +1,19 @@
 package terminals.service;
 
 import org.json.JSONObject;
+import terminals.models.Department;
+
+import java.util.List;
+import java.util.Map;
 
 public interface DepartmentsService {
 
-    JSONObject findAllDepartments();
+    List<Department> findAllDepartments();
 
-    JSONObject addDepartment(JSONObject request);
+    Map<String, String> addDepartment(String departmentName);
 
-    JSONObject renameDepartment(JSONObject request);
+    Map<String, String> renameDepartment(String departmentToRename, String departmentNewName);
 
-    JSONObject deleteDepartment(JSONObject request);
+    Map<String, String> deleteDepartment(String departmentToDelete);
+
 }

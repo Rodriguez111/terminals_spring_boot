@@ -11,6 +11,8 @@ import terminals.repository.TerminalRepository;
 import terminals.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class RegistrationProcessServiceImpl implements RegistrationProcessService {
@@ -24,24 +26,24 @@ public class RegistrationProcessServiceImpl implements RegistrationProcessServic
 
 
     @Override
-    public JSONObject getTerminalsStatistic() {
-        JSONObject result = new JSONObject();
+    public Map<String, String> getTerminalsStatistic() {
+        Map<String, String> result = new HashMap<>();
         int totalAmountOfTerminals = (int) terminalRepository.count();
         int amountOfInactiveTerminals = terminalRepository.countAllByTerminalIsActive(false);
         int amountOfGivenTerminals = terminalRepository.countAllByUserIsNotNull();
         int activeTerminalsRemain = totalAmountOfTerminals - amountOfGivenTerminals - amountOfInactiveTerminals;
-        result.put("totalAmountOfTerminals", totalAmountOfTerminals);
-        result.put("amountOfInactiveTerminals", amountOfInactiveTerminals);
-        result.put("amountOfGivenTerminals", amountOfGivenTerminals);
-        result.put("activeTerminalsRemain", activeTerminalsRemain);
+        result.put("totalAmountOfTerminals", String.valueOf(totalAmountOfTerminals));
+        result.put("amountOfInactiveTerminals", String.valueOf(amountOfInactiveTerminals));
+        result.put("amountOfGivenTerminals",  String.valueOf(amountOfGivenTerminals));
+        result.put("activeTerminalsRemain",  String.valueOf(activeTerminalsRemain));
         return result;
     }
 
     @Override
-    public JSONObject validateTerminalInput(JSONObject jsonFromClient) {
-        String terminalInvId = jsonFromClient.getString("validateTerminalInventoryId");
+    public Map<String, String> validateTerminalInput(Map<String, String> paramsFromClient) {
+        String terminalInvId = paramsFromClient.get("validateTerminalInventoryId");
 
-        JSONObject result = new JSONObject();
+        Map<String, String> result = new HashMap<>();
         Terminal terminal = terminalRepository.findByInventoryId(terminalInvId);
 
         if (terminal == null) {
@@ -56,12 +58,9 @@ public class RegistrationProcessServiceImpl implements RegistrationProcessServic
                 if (user == null) { //Если этот терминал не выдан
                     result.put("terminalIsReady", "OK"); //тогда терминал идет на выдачу
                     result.put("terminalRegId", regId);
-                    //result.put("terminalId", terminal.getId());
                 } else { //иначе идет на прием
                     result = createJsonObjectWithUserInfo(user);
                     result.put("terminalRegId", regId);
-                    // result.put("terminalId", terminal.getId());
-
                 }
             }
         }
@@ -69,12 +68,12 @@ public class RegistrationProcessServiceImpl implements RegistrationProcessServic
     }
 
     @Override
-    public JSONObject validateUserInputForGiving(JSONObject jsonFromClient) {
-        String login = jsonFromClient.getString("userInputLogin");
-        String terminalRegId = jsonFromClient.getString("terminalRegId");
-        String adminGaveLogin = jsonFromClient.getString("adminGaveLogin");
+    public Map<String, String> validateUserInputForGiving(Map<String, String> paramsFromClient) {
+        String login = paramsFromClient.get("userInputLogin");
+        String terminalRegId = paramsFromClient.get("terminalRegId");
+        String adminGaveLogin = paramsFromClient.get("adminGaveLogin");
         User adminGave = userRepository.findByUserLogin(adminGaveLogin);
-        JSONObject result = new JSONObject();
+        Map<String, String> result = new HashMap<>();
         User whoEnterUser = userRepository.findByUserLogin(login);
         if (whoEnterUser == null) {
             result.put("userNotExists", "Пользователь с таким логином не существует");
@@ -123,12 +122,12 @@ public class RegistrationProcessServiceImpl implements RegistrationProcessServic
     }
 
 
-    public JSONObject validateUserInputForReceiving(JSONObject jsonFromClient) {
-        String login = jsonFromClient.getString("userInputLogin");
-        String terminalRegId = jsonFromClient.getString("terminalRegId");
-        String adminReceivedLogin = jsonFromClient.getString("adminReceivedLogin");
+    public Map<String, String> validateUserInputForReceiving(Map<String, String> paramsFromClient) {
+        String login = paramsFromClient.get("userInputLogin");
+        String terminalRegId = paramsFromClient.get("terminalRegId");
+        String adminReceivedLogin = paramsFromClient.get("adminReceivedLogin");
         User adminGot = userRepository.findByUserLogin(adminReceivedLogin);
-        JSONObject result = new JSONObject();
+        Map<String, String> result = new HashMap<>();
         User whoEnterUser = userRepository.findByUserLogin(login);
         if (whoEnterUser == null) {
             result.put("userNotExists", "Пользователь с таким логином не существует");
@@ -184,8 +183,8 @@ public class RegistrationProcessServiceImpl implements RegistrationProcessServic
         terminalRepository.save(terminal);
     }
 
-    private JSONObject createJsonObjectWithUserInfo(User user) {
-        JSONObject result = getTerminalsStatistic();
+    private Map<String, String> createJsonObjectWithUserInfo(User user) {
+        Map<String, String> result = getTerminalsStatistic();
         result.put("login", user.getUserLogin());
         result.put("name", user.getUserName());
         result.put("surname", user.getUserSurname());

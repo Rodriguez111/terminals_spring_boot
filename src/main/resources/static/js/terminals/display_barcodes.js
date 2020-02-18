@@ -2,23 +2,20 @@
 getActiveTerminals();
 
 function getActiveTerminals() {
-    sendAjaxRequest("getActiveTerminals", generateBarcodes);
+    let url = "./terminals_controller/active";
+    sendAjaxRequest(url, "get", "", generateBarcodes);
 }
 
-function generateBarcodes(data) {
-    var terminals = data.listOfTerminals;
+function generateBarcodes(terminals) {
     var table = document.getElementById("barcode_table");
 
     for (var count = 0; count < terminals.length; count++) {
 
         var getQuery = "./generatebarcode?barcodeText=" + terminals[count].inventoryId + "&displayText=" + terminals[count].regId;
-        console.log(getQuery);
-        console.log(getQuery);
         for (var i = 0; i < 5; i++) {
             var row = document.createElement("TR");
             row.setAttribute("class", "barcode_row");
             table.appendChild(row);
-            console.log(table);
             var cell = document.createElement("TD");
             cell.setAttribute("class", "barcode_cell");
             row.appendChild(cell);
@@ -32,9 +29,9 @@ function generateBarcodes(data) {
     }
 }
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method:'post',
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method:method,
         data:dataToSend,
         contentType:'text/json; charset=utf-8',
         dataType:'json',

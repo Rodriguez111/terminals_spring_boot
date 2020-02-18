@@ -70,7 +70,7 @@ public class RegSortImpl implements RegSortService {
     }
 
     @Override
-    public String  sortEntries(String jsonSortParams) {
+    public List<Registration>  sortEntries(String jsonSortParams) {
         listOfRegs = new ArrayList<>();
         JSONObject jsonFromClient = new JSONObject(jsonSortParams);
         parseJson(jsonFromClient);
@@ -83,14 +83,7 @@ public class RegSortImpl implements RegSortService {
         } else {
            sortOptionsDescending.get(whatToSort).run();
         }
-        String result = "";
-        try {
-            result = new ObjectMapper().writeValueAsString(listOfRegs);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        return listOfRegs;
     }
 
 

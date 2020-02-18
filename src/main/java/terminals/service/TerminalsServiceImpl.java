@@ -14,10 +14,7 @@ import terminals.repository.TerminalRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,12 +35,12 @@ public class TerminalsServiceImpl implements TerminalsService {
 
     private List<Terminal> getListOfAllTerminals() {
         List<Terminal> listOfTerminals = (List<Terminal>) terminalRepository.findAll();
-        removeUsersFromTerminalsToAvoidRecursiveError(listOfTerminals);
+        removeRecursiveDataFromTerminals(listOfTerminals);
         sortTerminalsByRegId(listOfTerminals);
         return listOfTerminals;
     }
 
-    private void removeUsersFromTerminalsToAvoidRecursiveError(List<Terminal> terminals) {
+    private void removeRecursiveDataFromTerminals(List<Terminal> terminals) {
         terminals.forEach(t -> {
             if (t.getUser() != null) {
                 t.getUser().setTerminal(null);
@@ -69,44 +66,39 @@ public class TerminalsServiceImpl implements TerminalsService {
         });
     }
 
+
     @Override
-    public JSONObject findAllTerminals() {
-        List<Terminal> terminals = getListOfAllTerminals();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfTerminals", terminals);
-        return jsonObject;
+    public List<Terminal> findAllTerminals() {
+        return getListOfAllTerminals();
     }
 
     @Override
-    public JSONObject findActiveTerminals() {
+    public List<Terminal> findActiveTerminals() {
         List<Terminal> terminals = getListOfAllTerminals();
-        List<Terminal> resultList = terminals.stream().filter(Terminal::isTerminalIsActive).collect(Collectors.toList());
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfTerminals", resultList);
-        return jsonObject;
+        return terminals.stream().filter(Terminal::isTerminalIsActive).collect(Collectors.toList());
     }
 
     @Override
-    public JSONObject findTerminalById(int id) {
-        Terminal terminal = terminalRepository.findById(id).get();
+    public Terminal findTerminalById(String id) {
+        int terminalId = Integer.parseInt(id);
+        Terminal terminal = terminalRepository.findById(terminalId).get();
         List<Terminal> terminals = new ArrayList<>();
         terminals.add(terminal);
-        removeUsersFromTerminalsToAvoidRecursiveError(terminals);
-        return new JSONObject(terminal);
+        removeRecursiveDataFromTerminals(terminals);
+        return terminal;
     }
 
     @Transactional
     @Override
-    public JSONObject addTerminal(JSONObject jsonObject) {
+    public Map<String, String> addTerminal(Map<String, String> terminalParams) {
         String resultMessage;
-        JSONObject params = jsonObject.getJSONObject("addTerminal");
-        String terminalRegId = params.getString("regId");
-        String terminalModel = params.getString("model");
-        String terminalSerialId = params.getString("serialId");
-        String terminalInventoryId = params.getString("inventoryId");
-        String terminalComment = params.getString("comment");
-        Department department = departmentRepository.findByDepartment(params.getString("department"));
-        boolean terminalIsActive = params.getBoolean("isActive");
+        String terminalRegId = terminalParams.get("regId");
+        String terminalModel = terminalParams.get("model");
+        String terminalSerialId = terminalParams.get("serialId");
+        String terminalInventoryId = terminalParams.get("inventoryId");
+        String terminalComment = terminalParams.get("comment");
+        Department department = departmentRepository.findByDepartment(terminalParams.get("department"));
+        boolean terminalIsActive = terminalParams.get("isActive").equals("true");
         Terminal terminalToCheck = new Terminal(terminalRegId, terminalSerialId, terminalInventoryId);
         resultMessage = terminalExists(terminalToCheck);
         if (resultMessage.equals(OK)) {
@@ -117,53 +109,61 @@ public class TerminalsServiceImpl implements TerminalsService {
             Terminal terminalToAdd = setCurrentTimeStampForCreateDate(terminalToCheck);
             terminalRepository.save(terminalToAdd);
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("terminalAddResult", resultMessage);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("terminalAddResult", resultMessage);
+        return result;
     }
+
 
     @Transactional
     @Override
-    public JSONObject updateTerminal(JSONObject jsonObject) {
-        JSONObject params = jsonObject.getJSONObject("updateTerminal");
-        String result = OK;
-        Optional<Terminal> optionalTerminal = terminalRepository.findById(params.getInt("id"));
+    public Map<String, String> updateTerminal(String id, Map<String, String> terminalParams) {
+        String resultMessage = OK;
+        int terminalId = Integer.parseInt(id);
+        Optional<Terminal> optionalTerminal = terminalRepository.findById(terminalId);
         if (optionalTerminal.isPresent()) {
             Terminal terminal = optionalTerminal.get();
-            Terminal updatedTerminal = updateTerminalFields(terminal, params);
+            Terminal updatedTerminal = updateTerminalFields(terminal, terminalParams);
             if (terminal.equals(updatedTerminal)) {
-                result = NO_FIELDS_FOR_UPDATE;
-            } else if (terminal.isTerminalIsActive() != updatedTerminal.isTerminalIsActive() && terminal.getUser() != null) {
-                result = CAN_NOT_DEACTIVATE;
-            } else if (terminal.getUser() != null
-                    && (
-                    (terminal.getDepartment() == null && updatedTerminal.getDepartment() != null)
-                            || (terminal.getDepartment() != null && updatedTerminal.getDepartment() == null)
-                            || (terminal.getDepartment() != null && updatedTerminal.getDepartment() != null
-                            && !terminal.getDepartment().equals(updatedTerminal.getDepartment())))) {
-                result = CAN_NOT_CHANGE;
-            } else {
-                Terminal terminalToUpdate = setCurrentTimeStampForUpdateDate(updatedTerminal);
-                terminalRepository.save(terminalToUpdate);
+                resultMessage = NO_FIELDS_FOR_UPDATE;
+            }
+            if (resultMessage.equals(OK)) {
+                resultMessage = terminalExistsForUpdate(updatedTerminal);
+            }
+            if (resultMessage.equals(OK)) {
+                if (terminal.isTerminalIsActive() != updatedTerminal.isTerminalIsActive() && terminal.getUser() != null) {
+                    resultMessage = CAN_NOT_DEACTIVATE;
+                } else if (terminal.getUser() != null
+                        && (
+                        (terminal.getDepartment() == null && updatedTerminal.getDepartment() != null)
+                                || (terminal.getDepartment() != null && updatedTerminal.getDepartment() == null)
+                                || (terminal.getDepartment() != null && updatedTerminal.getDepartment() != null
+                                && !terminal.getDepartment().equals(updatedTerminal.getDepartment())))) {
+                    resultMessage = CAN_NOT_CHANGE;
+                } else {
+                    Terminal terminalToUpdate = setCurrentTimeStampForUpdateDate(updatedTerminal);
+                    terminalRepository.save(terminalToUpdate);
+                }
             }
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("terminalUpdateResult", result);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("terminalUpdateResult", resultMessage);
+        return result;
     }
 
     @Transactional
     @Override
-    public JSONObject deleteTerminal(int id) {
-        String result = UNABLE_DELETE;
-        if (!checkDependency(id)) {
-            Optional<Terminal> optionalTerminal = terminalRepository.findById(id);
+    public Map<String, String> deleteTerminal(String id) {
+        String resultMessage = UNABLE_DELETE;
+        int terminalId = Integer.parseInt(id);
+        if (!checkDependency(terminalId)) {
+            Optional<Terminal> optionalTerminal = terminalRepository.findById(terminalId);
             optionalTerminal.ifPresent(terminal -> terminalRepository.delete(terminal));
-            result = OK;
+            resultMessage = OK;
         }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("terminalDeleteResult", result);
-        return jsonObject;
+        Map<String, String> result = new HashMap<>();
+        result.put("terminalDeleteResult", resultMessage);
+        return result;
     }
 
     private boolean checkDependency(int id) {
@@ -175,28 +175,28 @@ public class TerminalsServiceImpl implements TerminalsService {
         return result;
     }
 
-    private Terminal updateTerminalFields(Terminal terminal, JSONObject jsonObject) {
+    private Terminal updateTerminalFields(Terminal terminal, Map<String, String> terminalParams) {
         Terminal updatedTerminal = terminal.clone();
-        if (validateField(jsonObject.getString("regId"))) {
-            updatedTerminal.setRegId(jsonObject.getString("regId"));
+        if (validateField(terminalParams.get("regId"))) {
+            updatedTerminal.setRegId(terminalParams.get("regId"));
         }
-        if (validateField(jsonObject.getString("model"))) {
-            updatedTerminal.setTerminalModel(jsonObject.getString("model"));
+        if (validateField(terminalParams.get("model"))) {
+            updatedTerminal.setTerminalModel(terminalParams.get("model"));
         }
-        if (validateField(jsonObject.getString("serialId"))) {
-            updatedTerminal.setSerialId(jsonObject.getString("serialId"));
+        if (validateField(terminalParams.get("serialId"))) {
+            updatedTerminal.setSerialId(terminalParams.get("serialId"));
         }
-        if (validateField(jsonObject.getString("inventoryId"))) {
-            updatedTerminal.setInventoryId(jsonObject.getString("inventoryId"));
+        if (validateField(terminalParams.get("inventoryId"))) {
+            updatedTerminal.setInventoryId(terminalParams.get("inventoryId"));
         }
-        if (validateField(jsonObject.getString("comment"))) {
-            updatedTerminal.setTerminalComment(jsonObject.getString("comment"));
+        if (validateField(terminalParams.get("comment"))) {
+            updatedTerminal.setTerminalComment(terminalParams.get("comment"));
         }
 
-        Department department = departmentRepository.findByDepartment(jsonObject.getString("department"));
+        Department department = departmentRepository.findByDepartment(terminalParams.get("department"));
         updatedTerminal.setDepartment(department);
 
-        updatedTerminal.setTerminalIsActive(jsonObject.getBoolean("isActive"));
+        updatedTerminal.setTerminalIsActive(terminalParams.get("isActive").equals("true"));
         return updatedTerminal;
     }
 
@@ -205,19 +205,13 @@ public class TerminalsServiceImpl implements TerminalsService {
     }
 
     @Override
-    public JSONObject getCountOfAllTerminals() {
-        long count = terminalRepository.count();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("countOfAllTerminals", count);
-        return jsonObject;
+    public long getCountOfAllTerminals() {
+        return terminalRepository.count();
     }
 
     @Override
-    public JSONObject getCountOfActiveTerminals() {
-        int count = terminalRepository.countAllByTerminalIsActive(true);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("countOfActiveTerminals", count);
-        return jsonObject;
+    public int getCountOfActiveTerminals() {
+        return terminalRepository.countAllByTerminalIsActive(true);
     }
 
     private String terminalExists(Terminal terminal) {
@@ -230,6 +224,19 @@ public class TerminalsServiceImpl implements TerminalsService {
         }
         return result;
     }
+
+    private String terminalExistsForUpdate(Terminal terminal) {
+        int id = terminal.getId();
+        String result = regIdExistsForUpdate(id, terminal.getRegId());
+        if (result.equals(OK)) {
+            result = serialIdExistsForUpdate(id, terminal.getSerialId());
+        }
+        if (result.equals(OK)) {
+            result = inventoryIdExistsForUpdate(id, terminal.getInventoryId());
+        }
+        return result;
+    }
+
 
     private String regIdExists(String regId) {
         String result = OK;
@@ -252,6 +259,33 @@ public class TerminalsServiceImpl implements TerminalsService {
     private String serialIdExists(String serialId) {
         String result = OK;
         Terminal terminal = terminalRepository.findBySerialId(serialId);
+        if (terminal != null) {
+            result = SERIAL_ID_EXISTS;
+        }
+        return result;
+    }
+
+    private String regIdExistsForUpdate(int id, String regId) {
+        String result = OK;
+        Terminal terminal = terminalRepository.findByRegIdForUpdate(regId, id);
+        if (terminal != null) {
+            result = REG_ID_EXISTS;
+        }
+        return result;
+    }
+
+    private String inventoryIdExistsForUpdate(int id, String inventoryId) {
+        String result = OK;
+        Terminal terminal = terminalRepository.findByInventoryIdForUpdate(inventoryId, id);
+        if (terminal != null) {
+            result = INVENTORY_ID_EXISTS;
+        }
+        return result;
+    }
+
+    private String serialIdExistsForUpdate(int id, String serialId) {
+        String result = OK;
+        Terminal terminal = terminalRepository.findBySerialIdForUpdate(serialId, id);
         if (terminal != null) {
             result = SERIAL_ID_EXISTS;
         }

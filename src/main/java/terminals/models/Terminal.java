@@ -39,7 +39,6 @@ public class Terminal implements Cloneable {
     private Department department;
 
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

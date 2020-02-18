@@ -1,22 +1,26 @@
 package terminals.service;
 
 import org.json.JSONObject;
+import terminals.models.User;
+
+import java.util.List;
+import java.util.Map;
 
 public interface UsersService {
 
-    JSONObject findAllUsers();
+    List<User> findAllUsers();
 
-    JSONObject findActiveUsers();
+    List<User> findActiveUsers();
 
-    JSONObject getCountOfAllUsers();
+    long getCountOfAllUsers();
 
-    JSONObject getCountOfActiveUsers();
+    int getCountOfActiveUsers();
 
-    JSONObject findUserById(int id);
+    User findUserById(String id);
 
-    JSONObject addUser(JSONObject jsonObject);
+    Map<String, String> addUser(Map<String, String> user);
 
-    JSONObject updateUser(JSONObject jsonObject);
+    Map<String, String> updateUser(String id, Map<String, String> user);
 
-    JSONObject deleteUser(int id);
+    Map<String, String> deleteUser(String id);
 }

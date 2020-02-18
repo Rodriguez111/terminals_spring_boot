@@ -30,11 +30,10 @@ var cancelModalBtn;
 showAllDepartments();
 
 function showAllDepartments() {
-    sendAjaxRequest("getAllDepartments", getDepartments);
+    sendAjaxRequest("./departments_controller",'get', '',  getDepartments);
 }
 
-function getDepartments(data) {
-    var departments = data.listOfDeparts;
+function getDepartments(departments) {
     var mainTable = document.getElementById("main_table_body");
     mainTable.innerHTML = "";
     for (i = 0; i < departments.length; i++) {
@@ -204,13 +203,12 @@ function validateLength(string, minLength, maxLength) {
 }
 
 function createDepartment() {
-    var jsonObj = JSON.stringify({"addDepartment":departNewName});
-    sendAjaxRequest(jsonObj, displayDepartmentsAfterCreate)
+    sendAjaxRequest("./departments_controller", "post", departNewName, displayDepartmentsAfterCreate);
 }
 
 function renameDepartment() {
-    var jsonObj = JSON.stringify({"updateDepartment":departToRename, "newDepartmentName":departNewName});
-    sendAjaxRequest(jsonObj, displayDepartmentsAfterRename)
+    var url = "./departments_controller/" + departToRename;
+    sendAjaxRequest(url, "put", departNewName, displayDepartmentsAfterRename);
 }
 
 function displayDepartmentsAfterCreate(data) {
@@ -226,7 +224,6 @@ function displayDepartmentsAfterCreate(data) {
     }
 }
 
-
 function displayDepartmentsAfterRename(data) {
     var message = data.departmentRenameResult;
     var infoContainer = document.getElementById("info_container");
@@ -241,11 +238,8 @@ function displayDepartmentsAfterRename(data) {
 }
 
 function deleteDepartment(departmentName) {
-    var dataToSend = {};
-    dataToSend["deleteDepartment"] = {};
-    dataToSend["deleteDepartment"]["department"] = departmentName;
-    dataToSend = JSON.stringify(dataToSend);
-    sendAjaxRequest(dataToSend, whatToDoAfterDelete)
+    let url = "./departments_controller/" + departmentName;
+    sendAjaxRequest(url, "delete", "", whatToDoAfterDelete);
 }
 
 function whatToDoAfterDelete(data) {
@@ -258,9 +252,9 @@ function whatToDoAfterDelete(data) {
     }
 }
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method: 'post',
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method: method,
         data: dataToSend,
         contentType: 'text/json; charset=utf-8',
         dataType: 'json',
@@ -269,6 +263,7 @@ function sendAjaxRequest(dataToSend, callback) {
         }
     })
 }
+
 
 function addListeners() {
     okCreateButton.addEventListener("click", function () {

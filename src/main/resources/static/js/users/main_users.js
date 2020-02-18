@@ -97,33 +97,37 @@ function checkCheckbox() {
 
 
 function showAllUsers() {
-    sendAjaxRequest("getAllUsers", getUsers);
+    let url = "./users_controller/all";
+    sendAjaxRequest(url, "get", "", getUsers);
 }
 
 function showActiveUsers() {
-    sendAjaxRequest("getActiveUsers", getUsers);
+    let url = "./users_controller/active";
+    sendAjaxRequest(url, "get", "", getUsers);
 
 }
 
 function getCountOfAllUsers() {
-    sendAjaxRequest("getCountOfAllUsers", showCountOfAllUsers);
+    let url = "./users_controller/countall";
+    sendAjaxRequest(url, "get", "", showCountOfAllUsers);
 
 }
 
 function getCountOfActiveUsers() {
-    sendAjaxRequest("getCountOfActiveUsers", showCountOfActiveUsers);
+    let url = "./users_controller/countactive";
+    sendAjaxRequest(url, "get", "", showCountOfActiveUsers);
 }
 
 function showCountOfAllUsers(data) {
-    document.getElementById("countOfAllUsers_container").innerHTML = "Всего: " + data.countOfAllUsers;
+    document.getElementById("countOfAllUsers_container").innerHTML = "Всего: " + data;
 }
 
 function showCountOfActiveUsers(data) {
-    document.getElementById("countOfActiveUsers_container").innerHTML = "Активных: " + data.countOfActiveUsers;
+    document.getElementById("countOfActiveUsers_container").innerHTML = "Активных: " + data;
 }
 
 
-function getUsers(data) {
+function getUsers(listOfUsers) {
     getCountOfAllUsers();
     getCountOfActiveUsers();
     var mainTable = document.getElementById("main_table");
@@ -140,7 +144,7 @@ function getUsers(data) {
         "<th id=\"headerDeleteColumn\">Удалить</th>";
 
     table += " </tr></thead>";
-    var listOfUsers = data.listOfUsers;
+
     for (var i = 0; i < listOfUsers.length; i++) {
         var active = listOfUsers[i].active ? "Да" : "Нет";
         var department = listOfUsers[i].department != null ? listOfUsers[i].department.department : '';
@@ -194,10 +198,8 @@ function getUsers(data) {
 
 
 function deleteUser(userId) {
-    var dataToSend = {};
-    dataToSend["deleteUser"] = userId;
-    dataToSend = JSON.stringify(dataToSend);
-    sendAjaxRequest(dataToSend, whatToDoAfterDeleteUser);
+    let url = "./users_controller/" + userId;
+    sendAjaxRequest(url, "delete", "", whatToDoAfterDeleteUser);
 }
 
 function whatToDoAfterDeleteUser(data) {
@@ -211,19 +213,17 @@ function whatToDoAfterDeleteUser(data) {
     }
 }
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method: 'post',
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method: method,
         data: dataToSend,
-        contentType: "application/json",
+        contentType: "text/json",
         dataType: 'json',
         cache: false,
         timeout: 600000,
         success: function (data) {
             callback(data);
-        },
-        error: function (e) {
-            console.log("error " + e.status);
         }
     })
 }
+

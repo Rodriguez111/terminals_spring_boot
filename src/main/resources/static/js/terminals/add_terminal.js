@@ -10,7 +10,6 @@ function validate() {
     var inventoryId = document.getElementById("inventoryId").value;
     var comment = document.getElementById("comment").value;
 
-
     if (regId == '') {
         result = false;
         infoBlock.innerHTML = 'Поле "Учетный номер" не может быть пустым';
@@ -53,14 +52,13 @@ function validate() {
         var isActive = isActiveInput.checked;
 
         var dataToSend = {};
-        dataToSend["addTerminal"] = {};
-        dataToSend["addTerminal"]["regId"] = regId;
-        dataToSend["addTerminal"]["model"] = model;
-        dataToSend["addTerminal"]["serialId"] = serialId;
-        dataToSend["addTerminal"]["inventoryId"] = inventoryId;
-        dataToSend["addTerminal"]["comment"] = comment;
-        dataToSend["addTerminal"]["department"] = department;
-        dataToSend["addTerminal"]["isActive"] = isActive;
+        dataToSend["regId"] = regId;
+        dataToSend["model"] = model;
+        dataToSend["serialId"] = serialId;
+        dataToSend["inventoryId"] = inventoryId;
+        dataToSend["comment"] = comment;
+        dataToSend["department"] = department;
+        dataToSend["isActive"] = isActive;
         dataToSend = JSON.stringify(dataToSend);
         sendAddTerminalInfo(dataToSend);
     }
@@ -68,7 +66,7 @@ function validate() {
 }
 
 function sendAddTerminalInfo(dataToSend) {
-    sendAjaxRequest(dataToSend, addTerminal);
+    sendAjaxRequest("./terminals_controller", "post", dataToSend, addTerminal);
 }
 
 function addTerminal(data) {
@@ -94,20 +92,7 @@ function validateRegId(string) {
     return regex.test(string);
 }
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method:'post',
-        data:dataToSend,
-        contentType:'text/json; charset=utf-8',
-        dataType:'json',
-        success:function (data) {
-            callback(data);
-        }
-    })
-}
-
-function displayDepartmentsSelector(data) {
-    var listOfDepartments = data.listOfDeparts;
+function displayDepartmentsSelector(listOfDepartments) {
     var selector = document.getElementById("departmentsSelector");
     var options = document.createElement("option");
     options.selected = true;
@@ -124,6 +109,23 @@ function displayDepartmentsSelector(data) {
 }
 
 function getAndDisplayDepartments() {
-    sendAjaxRequest("getAllDepartments", displayDepartmentsSelector);
+    sendAjaxRequest("./departments_controller", "get", "", displayDepartmentsSelector);
 }
 getAndDisplayDepartments();
+
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method: method,
+        data: dataToSend,
+        contentType: "application/json",
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            callback(data);
+        },
+        error: function (e) {
+            console.log("error " + e.status);
+        }
+    })
+}

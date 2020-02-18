@@ -14,11 +14,8 @@ public class RolesServiceImpl implements RolesService {
     private RoleRepository roleRepository;
 
     @Override
-    public JSONObject findAllRoles() {
-        List<Role> roles = (List<Role>) roleRepository.findByRoleNot("root");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfRoles", roles);
-        return jsonObject;
+    public List<Role> findAllRoles() {
+        return roleRepository.findByRoleNot("root");
     }
 
     @Autowired

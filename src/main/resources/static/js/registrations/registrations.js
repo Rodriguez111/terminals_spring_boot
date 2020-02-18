@@ -8,7 +8,6 @@ var userLogin;
 var userName;
 var userSurname;
 var terminalRegId;
-//var terminalId;
 var isReceiving = false;
 var focusToTerminalInput = true;
 
@@ -64,12 +63,12 @@ function onWindowLoad(){
 }
 
 function getAllStatistic() {
-sendAjaxData("./registrations", "getStatisticForRegistrationsPage", loadTerminalsStatistic);
+    let url = "./registrations/getStatistic";
+sendAjaxData(url, "get", "", loadTerminalsStatistic);
 
 }
 
 function loadTerminalsStatistic(data) {
-    data = JSON.parse(data);
     var total = data.totalAmountOfTerminals;
     var inactive = data.amountOfInactiveTerminals;
     var given = data.amountOfGivenTerminals;
@@ -114,38 +113,36 @@ function invokeErrorWindow(message) {
 function sendTerminalInventoryId() {
     var inventoryId = inputTerminalField.value;
     function callback(data) {
-        var str = JSON.parse(data);
-
-        if(typeof str.terminalNotExists !== 'undefined') {
+        if(typeof data.terminalNotExists !== 'undefined') {
             focusToTerminalInput = true;
-            invokeErrorWindow(str.terminalNotExists);
+            invokeErrorWindow(data.terminalNotExists);
         }
-        if(typeof str.terminalNotActive !== 'undefined') {
+        if(typeof data.terminalNotActive !== 'undefined') {
             focusToTerminalInput = true;
-            invokeErrorWindow(str.terminalNotActive);
+            invokeErrorWindow(data.terminalNotActive);
         }
-        if(typeof str.terminalIsReady !== 'undefined') { //Выдавать
+        if(typeof data.terminalIsReady !== 'undefined') { //Выдавать
 
             document.getElementById("operationTypeInfo").innerHTML = "\u0412\u044b\u0434\u0430\u0447\u0430";
             document.getElementById("operationTypeInfo").style.color = '#F30004';
-            document.getElementById("terminalNoInfo").innerHTML =  str.terminalRegId;
-            terminalRegId = str.terminalRegId;
-            document.getElementById("terminalImageBlock").innerHTML = photoLink("terminalsphoto", str.terminalRegId);
+            document.getElementById("terminalNoInfo").innerHTML =  data.terminalRegId;
+            terminalRegId = data.terminalRegId;
+            document.getElementById("terminalImageBlock").innerHTML = photoLink("terminalsphoto", data.terminalRegId);
             //terminalId = str.terminalId;
             isReceiving = false;
             userInputFocus();
         }
-        if(typeof str.login !== 'undefined') { //Получать
+        if(typeof data.login !== 'undefined') { //Получать
             document.getElementById("operationTypeInfo").innerHTML = "\u041f\u0440\u0438\u0435\u043c";
             document.getElementById("operationTypeInfo").style.color =  '#009816'; //зеленый
-            userLogin = str.login;
-            userName = str.name;
-            userSurname = str.surname;
-            terminalRegId = str.terminalRegId;
+            userLogin = data.login;
+            userName = data.name;
+            userSurname = data.surname;
+            terminalRegId = data.terminalRegId;
             //terminalId = str.terminalId;
-            document.getElementById("userNameInfo").innerHTML = str.surname + " " + str.name;
-            document.getElementById("terminalNoInfo").innerHTML =  str.terminalRegId;
-            document.getElementById("terminalImageBlock").innerHTML = photoLink("terminalsphoto", str.terminalRegId);
+            document.getElementById("userNameInfo").innerHTML = data.surname + " " + data.name;
+            document.getElementById("terminalNoInfo").innerHTML =  data.terminalRegId;
+            document.getElementById("terminalImageBlock").innerHTML = photoLink("terminalsphoto", data.terminalRegId);
             isReceiving = true;
             userInputFocus();
         }
@@ -153,7 +150,7 @@ function sendTerminalInventoryId() {
     var dataToSend = {};
     dataToSend["validateTerminalInventoryId"] = inventoryId;
     dataToSend = JSON.stringify(dataToSend);
-    sendAjaxData('./registrations', dataToSend, callback);
+    sendAjaxData('./registrations/validateTerminalInventoryId', "post", dataToSend, callback);
     inputTerminalField.value = '';
 }
 
@@ -179,34 +176,30 @@ function giveTerminalToUser() {
     var userInputLogin = inputUserField.value;
     var hiddenElementAdminLogin = document.getElementById("adminLogin");
     var adminGaveLogin = hiddenElementAdminLogin.value;
-    console.log("terminalRegId " + terminalRegId)
     var dataToSend = JSON.stringify({"validateUserInputForGiving":"", userInputLogin:userInputLogin, terminalRegId:terminalRegId, adminGaveLogin:adminGaveLogin});
 
 
     function callback(data) {
-        var str = JSON.parse(data);
-        console.log(str);
-        if(typeof str.userNotExists !== 'undefined') {
+        if(typeof data.userNotExists !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.userNotExists);
-
+            invokeErrorWindow(data.userNotExists);
         }
-        if (typeof str.userNotActive !== 'undefined') {
+        if (typeof data.userNotActive !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.userNotActive);
+            invokeErrorWindow(data.userNotActive);
         }
-        if (typeof str.userAlreadyHaveTerminal !== 'undefined') {
+        if (typeof data.userAlreadyHaveTerminal !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.userAlreadyHaveTerminal);
+            invokeErrorWindow(data.userAlreadyHaveTerminal);
         }
-        if (typeof str.departmentsNotMatch !== 'undefined') {
+        if (typeof data.departmentsNotMatch !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.departmentsNotMatch);
+            invokeErrorWindow(data.departmentsNotMatch);
         }
-        if (typeof str.terminalGivingSuccess !== 'undefined') {
-            document.getElementById("userNameInfo").innerHTML = str.surname + " " + str.name;
-            showTerminalsStatistic(str.totalAmountOfTerminals, str.amountOfInactiveTerminals, str.amountOfGivenTerminals, str.activeTerminalsRemain);
-            document.getElementById("userImageBlock").innerHTML = photoLink("usersphoto", str.login);
+        if (typeof data.terminalGivingSuccess !== 'undefined') {
+            document.getElementById("userNameInfo").innerHTML = data.surname + " " + data.name;
+            showTerminalsStatistic(data.totalAmountOfTerminals, data.amountOfInactiveTerminals, data.amountOfGivenTerminals, data.activeTerminalsRemain);
+            document.getElementById("userImageBlock").innerHTML = photoLink("usersphoto", data.login);
 
             $('#userInput').attr('disabled', 'disabled'); //Disable input
             setTimeout(function(){
@@ -217,10 +210,9 @@ function giveTerminalToUser() {
                 terminalInputFocus();
                 $('#userInput').removeAttr('disabled'); //Enable input
             }, 1000);//wait 1 second
-
         }
     }
-    sendAjaxData('./registrations', dataToSend, callback);
+    sendAjaxData('./registrations/validateUserInputForGiving', "post", dataToSend, callback);
     inputUserField.value = '';
 }
 
@@ -232,29 +224,27 @@ function receiveTerminalFromUser() {
     var dataToSend = JSON.stringify({"validateUserInputForReceiving":"", userInputLogin:userInputLogin, terminalRegId:terminalRegId, adminReceivedLogin:adminReceivedLogin});
 
     function callback(data) {
-        var str = JSON.parse(data);
-
-        if(typeof str.userNotExists !== 'undefined') {
+        if(typeof data.userNotExists !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.userNotExists);
+            invokeErrorWindow(data.userNotExists);
         }
-        if (typeof str.userNotMatch !== 'undefined') {
+        if (typeof data.userNotMatch !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.userNotMatch);
+            invokeErrorWindow(data.userNotMatch);
         }
-        if (typeof str.fatalErrorRecordNotFound !== 'undefined') {
+        if (typeof data.fatalErrorRecordNotFound !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.fatalErrorRecordNotFound);
+            invokeErrorWindow(data.fatalErrorRecordNotFound);
         }
-        if (typeof str.doNotHaveTerminal !== 'undefined') {
+        if (typeof data.doNotHaveTerminal !== 'undefined') {
             focusToTerminalInput = false;
-            invokeErrorWindow(str.doNotHaveTerminal);
+            invokeErrorWindow(data.doNotHaveTerminal);
         }
 
-        if (typeof str.terminalReceivingSuccess !== 'undefined') {
-            document.getElementById("userNameInfo").innerHTML = str.surname + " " + str.name;
-            showTerminalsStatistic(str.totalAmountOfTerminals, str.amountOfInactiveTerminals, str.amountOfGivenTerminals, str.activeTerminalsRemain);
-            document.getElementById("userImageBlock").innerHTML = photoLink("usersphoto", str.login);
+        if (typeof data.terminalReceivingSuccess !== 'undefined') {
+            document.getElementById("userNameInfo").innerHTML = data.surname + " " + data.name;
+            showTerminalsStatistic(data.totalAmountOfTerminals, data.amountOfInactiveTerminals, data.amountOfGivenTerminals, data.activeTerminalsRemain);
+            document.getElementById("userImageBlock").innerHTML = photoLink("usersphoto", data.login);
 
             $('#userInput').attr('disabled', 'disabled'); //Disable input
             setTimeout(function(){
@@ -268,7 +258,7 @@ function receiveTerminalFromUser() {
 
         }
     }
-    sendAjaxData('./registrations', dataToSend, callback);
+    sendAjaxData('./registrations/validateUserInputForReceiving', "post", dataToSend, callback);
     inputUserField.value = '';
 }
 
@@ -282,18 +272,16 @@ function showTerminalsStatistic(total, inactive, given, remain) {
 
 }
 
-
-function sendAjaxData(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.setRequestHeader('Content-Type', 'application/json;');
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            callback(xhr.responseText);
+function sendAjaxData(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method:method,
+        data:dataToSend,
+        contentType:'application/json; charset=utf-8',
+        dataType:'json',
+        success:function (data) {
+            callback(data);
         }
-    };
-    xhr.send(data);
+    })
 }
 
 function photoLink(folder, fileName) {
@@ -313,5 +301,4 @@ function terminalsRemainColor() {
         terminalsRemainInfo.style.color = "";
         terminalsRemainInfo.style.textShadow = "";
     }
-
 }

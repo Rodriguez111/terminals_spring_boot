@@ -17,7 +17,7 @@ public class GenerateBarcode {
     private BarcodeGenerator barcodeGenerator;
 
     @RequestMapping("/generatebarcode")
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void showImage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String barcodeText = req.getParameter("barcodeText");
         byte[] buffer = barcodeGenerator.getBarcodeImage(barcodeText).toByteArray();
         resp.setContentType("image/gif");

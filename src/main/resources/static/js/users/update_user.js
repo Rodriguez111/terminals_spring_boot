@@ -39,9 +39,9 @@ function validate() {
     if (result) {
         var idInputField = document.getElementById("id");
         var id = idInputField.value;
-        var dataToSend = {};
-        dataToSend["updateUser"] = {};
-        dataToSend["updateUser"]["id"] = id;
+
+
+
         var roleInput = document.getElementById("rolesSelector");
         var role = roleInput.options[roleInput.selectedIndex].value;
         var departmentInput = document.getElementById("departmentsSelector").valueOf();
@@ -49,16 +49,16 @@ function validate() {
         var isActiveInput = document.getElementById("isActive_input");
         var isActive = isActiveInput.checked;
 
-
-        dataToSend["updateUser"]["login"] = login;
-        dataToSend["updateUser"]["password"] = password;
-        dataToSend["updateUser"]["name"] = name;
-        dataToSend["updateUser"]["surname"] = surname;
-        dataToSend["updateUser"]["role"] = role;
-        dataToSend["updateUser"]["department"] = department;
-        dataToSend["updateUser"]["isActive"] = isActive;
+        var dataToSend = {};
+        dataToSend["login"] = login;
+        dataToSend["password"] = password;
+        dataToSend["name"] = name;
+        dataToSend["surname"] = surname;
+        dataToSend["role"] = role;
+        dataToSend["department"] = department;
+        dataToSend["isActive"] = isActive;
         dataToSend = JSON.stringify(dataToSend);
-        sendUpdateInfo(dataToSend);
+        sendUpdateInfo(id, dataToSend);
     }
 }
 
@@ -67,11 +67,11 @@ function validateLength(string, maxLength) {
 }
 
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method:'post',
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method:method,
         data:dataToSend,
-        contentType:'text/json; charset=utf-8',
+        contentType:'application/json; charset=utf-8',
         dataType:'json',
         success:function (data) {
             callback(data);
@@ -79,8 +79,7 @@ function sendAjaxRequest(dataToSend, callback) {
     })
 }
 
-function displayDepartmentsSelector(data) {
-    var listOfDepartments = data.listOfDeparts;
+function displayDepartmentsSelector(listOfDepartments) {
     var selector = document.getElementById("departmentsSelector");
     var options = document.createElement("option");
     options.selected = true;
@@ -97,11 +96,10 @@ function displayDepartmentsSelector(data) {
 }
 
 function getAndDisplayDepartments() {
-    sendAjaxRequest("getAllDepartments", displayDepartmentsSelector);
+    sendAjaxRequest("./departments_controller", "get", "",  displayDepartmentsSelector);
 }
 
-function displayRolesSelector(data) {
-    var listOfRoles = data.listOfRoles;
+function displayRolesSelector(listOfRoles) {
     var selector = document.getElementById("rolesSelector");
     for (var i = 0; i < listOfRoles.length; i++) {
         options = document.createElement("option");
@@ -113,11 +111,10 @@ function displayRolesSelector(data) {
 }
 
 function getAndDisplayRoles() {
-    sendAjaxRequest("getListOfRoles", displayRolesSelector);
+    sendAjaxRequest("./roles_controller", "get", "",  displayRolesSelector);
 }
 
-function displayUserInfo(data) {
-    var user = data;
+function displayUserInfo(user) {
     var userDepartment = user.department == null ? "" : user.department.department;
     var login = document.getElementById("login_input").valueOf();
     login.setAttribute("placeholder", user.userLogin);
@@ -171,23 +168,23 @@ function loadPage() {
 function getAndDisplayUserInfo() {
     var idInputField = document.getElementById("id");
     var id = idInputField.value;
-    console.log(id);
-    var jsonObj = JSON.stringify({"getUserInfo":id});
-    sendAjaxRequest(jsonObj, displayUserInfo);
+    let url = "./users_controller/userinfo/" + id;
+    sendAjaxRequest(url, "get", "", displayUserInfo);
 }
 
 
-function sendUpdateInfo(dataToSend) {
-    sendAjaxRequest(dataToSend, updateUser);
+function sendUpdateInfo(id, dataToSend) {
+    let url = "./users_controller/" + id;
+    sendAjaxRequest(url, "put", dataToSend, updateUser);
 }
 
 function updateUser(data) {
-    var result = data.userUpdateResult;
-    if (result === "OK") {
+    let userUpdateResult = data.userUpdateResult;
+    if (userUpdateResult === "OK") {
         window.location.replace("./users");
     } else {
         var infoBlock = document.getElementById('sys_info');
-        infoBlock.innerHTML = result;
+        infoBlock.innerHTML = userUpdateResult;
     }
 }
 

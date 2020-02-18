@@ -2,13 +2,15 @@ package terminals.service;
 
 import org.json.JSONObject;
 
+import java.util.Map;
+
 public interface RegistrationProcessService {
 
-    JSONObject getTerminalsStatistic();
+    Map<String, String> getTerminalsStatistic();
 
-    JSONObject validateTerminalInput(JSONObject jsonFromClient);
+    Map<String, String> validateTerminalInput(Map<String, String> paramsFromClient);
 
-    JSONObject validateUserInputForGiving(JSONObject jsonFromClient);
+    Map<String, String> validateUserInputForGiving(Map<String, String> paramsFromClient);
 
-    JSONObject validateUserInputForReceiving(JSONObject jsonFromClient);
+    Map<String, String> validateUserInputForReceiving(Map<String, String> paramsFromClient);
 }

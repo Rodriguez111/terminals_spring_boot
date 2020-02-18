@@ -11,7 +11,9 @@ import terminals.repository.DepartmentRepository;
 import terminals.repository.TerminalRepository;
 import terminals.repository.UserRepository;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DepartmentsServiceImpl implements DepartmentsService {
@@ -25,19 +27,15 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     private TerminalRepository terminalRepository;
 
     @Override
-    public JSONObject findAllDepartments() {
+    public List<Department> findAllDepartments() {
         List<Department> listOfDepartments = (List<Department>) departmentRepository.findAll();
         listOfDepartments.sort(Comparator.comparing(Department::getDepartment));
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfDeparts", listOfDepartments);
-        return jsonObject;
+        return listOfDepartments;
     }
-
 
     @Transactional
     @Override
-    public JSONObject addDepartment(JSONObject request) {
-        String departmentName = request.getString("addDepartment");
+    public Map<String, String> addDepartment(String departmentName) {
         Department existingDepartment = departmentRepository.findByDepartment(departmentName);
         String resultMessage = DEPARTMENT_EXISTS;
         if (existingDepartment == null) {
@@ -45,17 +43,14 @@ public class DepartmentsServiceImpl implements DepartmentsService {
             departmentRepository.save(department);
             resultMessage = OK;
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("departmentAddResult", resultMessage);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("departmentAddResult", resultMessage);
+        return result;
     }
 
     @Transactional
     @Override
-    public JSONObject renameDepartment(JSONObject request) {
-        String oldDepName = request.getString("updateDepartment");
-        String newDepName = request.getString("newDepartmentName");
-
+    public Map<String, String> renameDepartment(String oldDepName, String newDepName) {
         String resultMessage = OK;
         Department existingDepartment = departmentRepository.findByDepartment(newDepName);
         if (existingDepartment != null) {
@@ -65,19 +60,17 @@ public class DepartmentsServiceImpl implements DepartmentsService {
             oldDepartment.setDepartment(newDepName);
             departmentRepository.save(oldDepartment);
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("departmentRenameResult", resultMessage);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("departmentRenameResult", resultMessage);
+        return result;
     }
+
 
     @Transactional
     @Override
-    public JSONObject deleteDepartment(JSONObject request) {
-        request = request.getJSONObject("deleteDepartment");
+    public Map<String, String> deleteDepartment(String departmentToDelete) {
         String resultMessage = OK;
-        String departmentName = request.getString("department");
-        Department existingDepartment = departmentRepository.findByDepartment(departmentName);
-
+        Department existingDepartment = departmentRepository.findByDepartment(departmentToDelete);
         if (existingDepartment == null) {
             resultMessage = DEPARTMENT_NOT_EXISTS;
         } else {
@@ -88,11 +81,11 @@ public class DepartmentsServiceImpl implements DepartmentsService {
                 departmentRepository.delete(existingDepartment);
             }
         }
-
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("departmentDeleteResult", resultMessage);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("departmentDeleteResult", resultMessage);
+        return result;
     }
+
 
     private boolean checkDependency(int departmentId) {
         return checkUsersDependency(departmentId) || checkTerminalsDependency(departmentId);

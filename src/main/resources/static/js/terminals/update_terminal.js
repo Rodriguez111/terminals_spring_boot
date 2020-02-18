@@ -38,36 +38,35 @@ function validate() {
     }
     if (result) {
         var id = document.getElementById("id").value;
-        var dataToSend = {};
-        dataToSend["updateTerminal"] = {};
-        dataToSend["updateTerminal"]["id"] = id;
         var departmentInput = document.getElementById("departmentsSelector").valueOf();
         var department = departmentInput.options[departmentInput.selectedIndex].value;
         var isActiveInput = document.getElementById("isActive_input");
         var isActive = isActiveInput.checked;
-        dataToSend["updateTerminal"]["regId"] = regId;
-        dataToSend["updateTerminal"]["model"] = model;
-        dataToSend["updateTerminal"]["serialId"] = serialId;
-        dataToSend["updateTerminal"]["inventoryId"] = inventoryId;
-        dataToSend["updateTerminal"]["comment"] = comment;
-        dataToSend["updateTerminal"]["department"] = department;
-        dataToSend["updateTerminal"]["isActive"] = isActive;
+        var dataToSend = {};
+        dataToSend["regId"] = regId;
+        dataToSend["model"] = model;
+        dataToSend["serialId"] = serialId;
+        dataToSend["inventoryId"] = inventoryId;
+        dataToSend["comment"] = comment;
+        dataToSend["department"] = department;
+        dataToSend["isActive"] = isActive;
         dataToSend = JSON.stringify(dataToSend);
-        sendUpdateInfo(dataToSend);
+        sendUpdateInfo(id, dataToSend);
 
     }
 }
 
-function sendUpdateInfo(dataToSend) {
-    sendAjaxRequest(dataToSend, updateTerminal);
+function sendUpdateInfo(id, dataToSend) {
+    let url = "./terminals_controller/" + id;
+    sendAjaxRequest(url, "put", dataToSend, updateTerminal);
 }
 
 function updateTerminal(data) {
-    var result = data.terminalUpdateResult;
+    let result = data.terminalUpdateResult;
     if (result === "OK") {
         window.location.replace("./terminals");
     } else {
-        var infoBlock = document.getElementById('sys_info');
+        let infoBlock = document.getElementById('sys_info');
         infoBlock.innerHTML = result;
     }
 }
@@ -86,21 +85,20 @@ function validateRegId(string) {
 }
 
 
-function sendAjaxRequest(dataToSend, callback) {
-    $.ajax('./json', {
-        method: 'post',
-        data: dataToSend,
-        contentType: 'text/json; charset=utf-8',
-        dataType: 'json',
-        success: function (data) {
+function sendAjaxRequest(url, method, dataToSend, callback) {
+    $.ajax(url, {
+        method:method,
+        data:dataToSend,
+        contentType:'application/json; charset=utf-8',
+        dataType:'json',
+        success:function (data) {
             callback(data);
         }
     })
 }
 
 
-function displayDepartmentsSelector(data) {
-    var listOfDepartments = data.listOfDeparts;
+function displayDepartmentsSelector(listOfDepartments) {
     var selector = document.getElementById("departmentsSelector");
     var options = document.createElement("option");
     options.selected = true;
@@ -146,7 +144,6 @@ function displayTerminalInfo(data) {
         .getElementsByTagName("option");
     for (var i = 0; i < selectorsOfDepartmentSelector.length; i++) {
         if(selectorsOfDepartmentSelector[i].value === terminalDepartment) {
-            console.log("terminalDepartment " + terminalDepartment);
             selectorsOfDepartmentSelector[i].selected = true;
         }
     }
@@ -157,13 +154,13 @@ function loadPage() {
 }
 
 function getAndDisplayDepartments() {
-    sendAjaxRequest("getAllDepartments", displayDepartmentsSelector);
+    sendAjaxRequest("./departments_controller", "get", "",  displayDepartmentsSelector);
 }
 
 function getAndDisplayTerminalInfo() {
     var idInputField = document.getElementById("id");
     var id = idInputField.value;
-    var jsonObj = JSON.stringify({"getTerminalInfo":id});
-    sendAjaxRequest(jsonObj, displayTerminalInfo);
+    let url = "./terminals_controller/terminal/" + id;
+    sendAjaxRequest(url, "get", "", displayTerminalInfo);
 }
 

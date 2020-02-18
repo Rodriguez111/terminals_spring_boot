@@ -44,7 +44,7 @@ public class UsersServiceImpl implements UsersService {
         });
     }
 
-    private void removeTerminalsFromUsersToAvoidRecursiveError(List<User> users) {
+    private void removeRecursiveDataFromUsers(List<User> users) {
         users.forEach(u -> {
             if (u.getTerminal() != null) {
                 u.getTerminal().setUser(null);
@@ -54,149 +54,159 @@ public class UsersServiceImpl implements UsersService {
 
     private List<User> getListOfAllUsers() {
         List<User> listOfUsers = (List<User>) userRepository.findAll();
-        removeTerminalsFromUsersToAvoidRecursiveError(listOfUsers);
+        removeRecursiveDataFromUsers(listOfUsers);
         sortUsersByFullName(listOfUsers);
         return listOfUsers;
     }
 
+    private boolean loginExists (String login) {
+        boolean result = false;
+        User existingUser = userRepository.findByUserLogin(login);
+        if (existingUser != null) {
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean loginExistsForUpdate (int id, String login) {
+        boolean result = false;
+        User existingUser = userRepository.findByByUserLoginForUpdate(login,id);
+        if (existingUser != null) {
+            result = true;
+        }
+        return result;
+    }
+
 
     @Override
-    public JSONObject findAllUsers() {
+    public List<User> findAllUsers() {
+        return getListOfAllUsers();
+    }
+
+
+    @Override
+    public List<User> findActiveUsers() {
         List<User> users = getListOfAllUsers();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfUsers", users);
-        return jsonObject;
+       return users.stream().filter(User::isActive).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public long getCountOfAllUsers() {
+        return userRepository.count();
     }
 
     @Override
-    public JSONObject findActiveUsers() {
-        List<User> users = getListOfAllUsers();
-        List<User> resultList = users.stream().filter(User::isActive).collect(Collectors.toList());
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("listOfUsers", resultList);
-        return jsonObject;
+    public int getCountOfActiveUsers() {
+        return userRepository.countAllByIsActive(true);
     }
 
     @Override
-    public JSONObject getCountOfAllUsers() {
-        long count = userRepository.count();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("countOfAllUsers", count);
-        return jsonObject;
-    }
-
-    @Override
-    public JSONObject getCountOfActiveUsers() {
-        int countOfActiveUsers = userRepository.countAllByIsActive(true);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("countOfActiveUsers", countOfActiveUsers);
-        return jsonObject;
-    }
-
-    @Override
-    public JSONObject findUserById(int id) {
-        User user = userRepository.findById(id).get();
+    public User findUserById(String id) {
+        int userId = Integer.parseInt(id);
+        User user = userRepository.findById(userId).get();
         List<User> users = new ArrayList<>();
         users.add(user);
-        removeTerminalsFromUsersToAvoidRecursiveError(users);
-        return new JSONObject(user);
+        removeRecursiveDataFromUsers(users);
+        return user;
     }
 
     @Transactional
     @Override
-    public JSONObject addUser(JSONObject jsonObject) {
+    public Map<String, String> addUser(Map<String, String> usersParams) {
         String resultMessage = "OK";
-        JSONObject params = jsonObject.getJSONObject("addUser");
-        String login = params.getString("login");
-        String password = passwordEncoder.encode(params.getString("password"));
-        String name = params.getString("name");
-        String surname = params.getString("surname");
-        Role role = roleRepository.findByRole(params.getString("role"));
-        Department department = departmentRepository.findByDepartment(params.getString("department"));
-        boolean isActive = params.getBoolean("isActive");
-        User existingUser = userRepository.findByUserLogin(login);
-        if (existingUser != null) {
-            resultMessage = "Логин существует";
+        String login = usersParams.get("login");
+        String password = passwordEncoder.encode(usersParams.get("password"));
+        String name = usersParams.get("name");
+        String surname = usersParams.get("surname");
+        Role role = roleRepository.findByRole(usersParams.get("role"));
+        Department department = departmentRepository.findByDepartment(usersParams.get("department"));
+        boolean isActive = usersParams.get("isActive").equals("true");
+        if (loginExists(login)) {
+            resultMessage = "Логин " + login + " уже существует";
         } else {
             User user = new User(login, password, name, surname, role, department, isActive);
             User userToAdd = setCurrentTimeStampForCreateDate(user);
             userRepository.save(userToAdd);
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("userAddResult", resultMessage);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("userAddResult", resultMessage);
+        return result;
     }
 
     @Transactional
     @Override
-    public JSONObject updateUser(JSONObject jsonObject) {
-        JSONObject params = jsonObject.getJSONObject("updateUser");
-        String result = "OK";
-        Optional<User> optionalUser = userRepository.findById(params.getInt("id"));
+    public Map<String, String> updateUser(String id, Map<String, String> usersParams) {
+        String resultMessage = "OK";
+        int userId = Integer.parseInt(id);
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            User updatedUser = updateUserFields(user, params);
+            User updatedUser = updateUserFields(user, usersParams);
             if (user.equals(updatedUser)) {
-                result = "Нет полей для обновления";
+                resultMessage = "Нет полей для обновления";
+            } else if (loginExistsForUpdate(updatedUser.getId(), updatedUser.getUserLogin())) {
+                resultMessage = "Пользователь с логином " + updatedUser.getUserLogin() + " уже существует";
             } else if (user.isActive() != updatedUser.isActive() && user.getTerminal() != null) {
-                result = "Нельзя деактивировать пользователя, пока за ним числится терминал";
+                resultMessage = "Нельзя деактивировать пользователя, пока за ним числится терминал";
             } else if (user.getTerminal() != null
                     && ((user.getTerminal() != null && updatedUser.getTerminal() == null)
                     || (user.getDepartment() == null && updatedUser.getDepartment() != null)
                     || (user.getDepartment() != null && updatedUser.getDepartment() != null
                     && !user.getDepartment().equals(updatedUser.getDepartment())))) {
-                result = "Нельзя сменить департамент пользователя, пока за ним числится терминал";
+                resultMessage = "Нельзя сменить департамент пользователя, пока за ним числится терминал";
             } else {
                 User userToUpdate = setCurrentTimeStampForUpdateDate(updatedUser);
                 userRepository.save(userToUpdate);
             }
         }
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("userUpdateResult", result);
-        return jsonResult;
+        Map<String, String> result = new HashMap<>();
+        result.put("userUpdateResult", resultMessage);
+        return result;
     }
 
     @Transactional
     @Override
-    public JSONObject deleteUser(int id) {
-        String result = "Невозможно удалить пользователя, пока существуют зависимые записи";
-        if (!checkDependency(id)) {
-            Optional<User> optionalUser = userRepository.findById(id);
+    public Map<String, String> deleteUser(String id) {
+        String resultMessage = "Невозможно удалить пользователя, пока существуют зависимые записи";
+        int userId = Integer.parseInt(id);
+        if (!checkDependency(userId)) {
+            Optional<User> optionalUser = userRepository.findById(userId);
             optionalUser.ifPresent(user -> userRepository.delete(user));
-            result = "OK";
+            resultMessage = "OK";
         }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("userDeleteResult", result);
-        return jsonObject;
+        Map<String, String> result = new HashMap<>();
+        result.put("userDeleteResult", resultMessage);
+        return result;
     }
 
-    private User updateUserFields(User user, JSONObject jsonObject) {
+    private User updateUserFields(User user, Map<String, String> userParams) {
         User updatedUser = user.clone();
-        if (validateField(jsonObject.getString("login"))) {
-            updatedUser.setUserLogin(jsonObject.getString("login"));
+        if (validateField(userParams.get("login"))) {
+            updatedUser.setUserLogin(userParams.get("login"));
         }
-        if (validateField(jsonObject.getString("password"))) {
-            String newPassword = passwordEncoder.encode(jsonObject.getString("password"));
+        if (validateField(userParams.get("password"))) {
+            String newPassword = passwordEncoder.encode(userParams.get("password"));
             updatedUser.setUserPassword(newPassword);
         }
-        if (validateField(jsonObject.getString("name"))) {
-            updatedUser.setUserName(jsonObject.getString("name"));
+        if (validateField(userParams.get("name"))) {
+            updatedUser.setUserName(userParams.get("name"));
 
         }
-        if (validateField(jsonObject.getString("surname"))) {
-            updatedUser.setUserSurname(jsonObject.getString("surname"));
+        if (validateField(userParams.get("surname"))) {
+            updatedUser.setUserSurname(userParams.get("surname"));
 
         }
-        if (!jsonObject.getString("role").equals(user.getRole().getRole())) {
-            Role role = roleRepository.findByRole(jsonObject.getString("role"));
+        if (!userParams.get("role").equals(user.getRole().getRole())) {
+            Role role = roleRepository.findByRole(userParams.get("role"));
             updatedUser.setRole(role);
 
         }
 
-        Department department = departmentRepository.findByDepartment(jsonObject.getString("department"));
+        Department department = departmentRepository.findByDepartment(userParams.get("department"));
         updatedUser.setDepartment(department);
 
-        updatedUser.setActive(jsonObject.getBoolean("isActive"));
+        updatedUser.setActive(userParams.get("isActive").equals("true"));
         return updatedUser;
     }
 

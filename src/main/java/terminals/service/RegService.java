@@ -1,9 +1,14 @@
 package terminals.service;
 
+import terminals.models.Registration;
+
+import java.util.List;
+import java.util.Map;
+
 public interface RegService {
 
-    String findAllEntriesForTheLastDay();
+    List<Registration> findAllEntriesForTheLastDay();
 
-    String findEntriesByFilter(String jsonFilterParams);
+    List<Registration> findEntriesByFilter(Map<String, String> filterParams);
 
 }

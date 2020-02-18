@@ -2,6 +2,7 @@ package terminals.web;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.Lifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import terminals.models.User;
 import terminals.repository.UserRepository;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -58,7 +62,6 @@ public class AuthProviderImpl implements AuthenticationProvider {
 
         return new UsernamePasswordAuthenticationToken(securityUser, null, grantedAuthorities);
     }
-
 
 
     @Override
